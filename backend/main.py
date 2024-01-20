@@ -1,14 +1,14 @@
 """entry point for flask backend"""
 
-import os
 import datetime
+import os
 
+import google.oauth2.id_token
 from dotenv import load_dotenv
 
 from flask import Flask, render_template, request
 from google.auth.transport import requests
 from google.cloud import datastore
-import google.oauth2.id_token
 
 app = Flask(__name__)
 datastore_client = datastore.Client()

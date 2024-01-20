@@ -1,6 +1,10 @@
 name: Super-Linter
 
-on: push
+on:
+  push:
+    branches-ignore: [master, main]
+  pull_request:
+    branches: [master, main]
 
 jobs:
   super-lint:
@@ -8,10 +12,16 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
 
       - name: Run Super-Linter
         uses: github/super-linter@v4
         env:
           DEFAULT_BRANCH: main
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          VALIDATE_ALL_CODEBASE: false
+          VALIDATE_PYTHON: true
+          PYTHON_PYLINT: true
+          VALIDATE_PYTHON_BLACK: true
