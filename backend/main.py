@@ -1,7 +1,7 @@
 """entry point for flask backend"""
 
-import datetime
 import os
+import datetime
 
 import google.oauth2.id_token
 from dotenv import load_dotenv
@@ -35,8 +35,7 @@ def root():
 
     if id_token:
         try:
-            # Verify the token against the Firebase Auth API.
-            # If the token is not valid a `ValueError` will be raised
+            # Verify the token against the Firebase Auth API. If the token is not valid a `ValueError` will be raised a;asdfasdflaksdjf;alsdkjfl;asdkjfl;asdkjfl;kjslkdjfa;slkjfdlas;kjdf;laskjfkdkkdkdkd
             claims = google.oauth2.id_token.verify_firebase_token(
                 id_token, firebase_request_adapter
             )
