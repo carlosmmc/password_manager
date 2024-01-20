@@ -3,7 +3,7 @@
 <html>
 
 <head>
-    <title>Datastore and Firebase Auth Example</title>
+    <title>Password Manager</title>
     <script src="{{ url_for('static', filename='script.js') }}"></script>
     <link type="text/css" rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
     <script src="https://www.gstatic.com/firebasejs/9.13.0/firebase-app-compat.js"></script>
@@ -23,7 +23,7 @@
         firebase.initializeApp(firebaseConfig);
 
         if (typeof firebase === 'undefined') {
-            const msg = "Please provide your Firebase configuration details. See instructions in templates/index.html.";
+            const msg = "Firebase configuration details not found!";
             console.log(msg);
             alert(msg);
         }
@@ -32,11 +32,9 @@
 
 <body>
 
-    <h1>Datastore and Firebase Auth Example</h1>
+    <h1>Password Manager</h1>
     <div id="firebaseui-auth-container"></div>
-
     <button id="sign-out" hidden=true>Sign Out</button>
-
     <div id="login-info" hidden=true>
         <h2>Login info:</h2>
         {% if user_data %}
