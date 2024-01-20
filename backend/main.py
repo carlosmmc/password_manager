@@ -1,6 +1,9 @@
-from dotenv import load_dotenv
+"""entry point for flask backend"""
+
 import os
 import datetime
+
+from dotenv import load_dotenv
 
 from flask import Flask, render_template, request
 from google.auth.transport import requests
@@ -18,11 +21,13 @@ firebase_config = {
     "projectId": os.environ.get("FIREBASE_PROJECT_ID"),
     "storageBucket": os.environ.get("FIREBASE_STORAGE_BUCKET"),
     "messagingSenderId": os.environ.get("FIREBASE_MESSAGING_SENDER_ID"),
-    "appId": os.environ.get("FIREBASE_APP_ID")
+    "appId": os.environ.get("FIREBASE_APP_ID"),
 }
+
 
 @app.route("/")
 def root():
+    """root api method of the application"""
     id_token = request.cookies.get("token")
     error_message = None
     claims = None
@@ -30,23 +35,37 @@ def root():
 
     if id_token:
         try:
-            # Verify the token against the Firebase Auth API. If the token is not valid a `ValueError` will be raised
-            claims = google.oauth2.id_token.verify_firebase_token(id_token, firebase_request_adapter)
-            store_time(claims["email"], datetime.datetime.now(tz=datetime.timezone.utc))
+            # Verify the token against the Firebase Auth API.
+            # If the token is not valid a `ValueError` will be raised
+            claims = google.oauth2.id_token.verify_firebase_token(
+                id_token, firebase_request_adapter
+            )
+            current_date_time = datetime.datetime.now(tz=datetime.timezone.utc)
+            store_time(claims["email"], current_date_time)
             times = fetch_times(claims["email"], 10)
 
         except ValueError as exc:
             error_message = str(exc)
 
-    return render_template("index.html", user_data=claims, error_message=error_message, times=times, firebase_config=firebase_config)
+    return render_template(
+        "index.html",
+        user_data=claims,
+        error_message=error_message,
+        times=times,
+        firebase_config=firebase_config,
+    )
+
 
 def store_time(email, dt):
+    """store access time into datastore"""
     entity = datastore.Entity(key=datastore_client.key("User", email, "visit"))
     entity.update({"timestamp": dt})
 
     datastore_client.put(entity)
 
+
 def fetch_times(email, limit):
+    """temp function to fetch list of times user has accessed appplication"""
     ancestor = datastore_client.key("User", email)
     query = datastore_client.query(kind="visit", ancestor=ancestor)
     query.order = ["-timestamp"]
@@ -54,6 +73,7 @@ def fetch_times(email, limit):
     times = query.fetch(limit=limit)
 
     return times
+
 
 if __name__ == "__main__":
     # for local development only
