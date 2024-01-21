@@ -1,109 +1,34 @@
 """entry point for flask backend"""
 
 import datetime
-import os
 
-import google.oauth2.id_token
 from dotenv import load_dotenv
+from flask import Flask, render_template, g
 
-from flask import Flask, render_template, request
-from google.auth.transport import requests
-from google.cloud import datastore
-
-import sqlalchemy
-from google.cloud.sql.connector import Connector, IPTypes
+from db.cloud_sql import get_user_passwords
+from db.firebase import get_firebase_config, store_time, fetch_times
+from middleware.auth import init_auth_middleware
 
 app = Flask(__name__)
-datastore_client = datastore.Client()
-firebase_request_adapter = requests.Request()
 load_dotenv()
-
-connector = Connector()
-
-
-def get_db_connection():
-    conn = connector.connect(
-        os.getenv("CLOUD_SQL_CONNECTION_NAME"),
-        "pg8000",
-        user=os.getenv("CLOUD_SQL_USER"),
-        password=os.getenv("CLOUD_SQL_PASSWORD"),
-        db=os.getenv("CLOUD_SQL_DATABASE_NAME"),
-    )
-    return conn
-
-
-pool = sqlalchemy.create_engine(
-    "postgresql+pg8000://",
-    creator=get_db_connection,
-)
-
-firebase_config = {
-    "apiKey": os.environ.get("FIREBASE_API_KEY"),
-    "authDomain": os.environ.get("FIREBASE_AUTH_DOMAIN"),
-    "projectId": os.environ.get("FIREBASE_PROJECT_ID"),
-    "storageBucket": os.environ.get("FIREBASE_STORAGE_BUCKET"),
-    "messagingSenderId": os.environ.get("FIREBASE_MESSAGING_SENDER_ID"),
-    "appId": os.environ.get("FIREBASE_APP_ID"),
-}
+init_auth_middleware(app)
 
 
 @app.route("/")
 def root():
-    """root api method of the application"""
-    id_token = request.cookies.get("token")
-    error_message = None
-    claims = None
-    times = None
-
-    if id_token:
-        try:
-            # Verify the token against the Firebase Auth API.
-            # If the token is not valid a `ValueError` will be raised
-            claims = google.oauth2.id_token.verify_firebase_token(
-                id_token, firebase_request_adapter
-            )
-            user_email_address = claims["email"]
-            current_date_time = datetime.datetime.now(tz=datetime.timezone.utc)
-            store_time(user_email_address, current_date_time)
-            times = fetch_times(user_email_address, 5)
-
-            with pool.connect() as conn:
-                query = sqlalchemy.text(
-                    "SELECT website, password FROM password_vault WHERE user_id = :user_id LIMIT 5"
-                )
-                result = conn.execute(query, {"user_id": user_email_address})
-                password_info = result.fetchall()
-
-        except ValueError as exc:
-            error_message = str(exc)
+    user_email_address = g.user["email"]
+    current_date_time = datetime.datetime.now(tz=datetime.timezone.utc)
+    store_time(user_email_address, current_date_time)
+    times = fetch_times(user_email_address, 5)
+    password_info = get_user_passwords(user_email_address, limit=5)
 
     return render_template(
         "index.html",
-        user_data=claims,
-        error_message=error_message,
+        user_data=g.user,
         times=times,
-        firebase_config=firebase_config,
+        firebase_config=get_firebase_config(),
         password_info=password_info,
     )
-
-
-def store_time(email, dt):
-    """store access time into datastore"""
-    entity = datastore.Entity(key=datastore_client.key("User", email, "visit"))
-    entity.update({"timestamp": dt})
-
-    datastore_client.put(entity)
-
-
-def fetch_times(email, limit):
-    """temp function to fetch list of times user has accessed appplication"""
-    ancestor = datastore_client.key("User", email)
-    query = datastore_client.query(kind="visit", ancestor=ancestor)
-    query.order = ["-timestamp"]
-
-    times = query.fetch(limit=limit)
-
-    return times
 
 
 if __name__ == "__main__":
