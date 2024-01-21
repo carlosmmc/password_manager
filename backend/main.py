@@ -10,10 +10,32 @@ from flask import Flask, render_template, request
 from google.auth.transport import requests
 from google.cloud import datastore
 
+import sqlalchemy
+from google.cloud.sql.connector import Connector, IPTypes
+
 app = Flask(__name__)
 datastore_client = datastore.Client()
 firebase_request_adapter = requests.Request()
 load_dotenv()
+
+connector = Connector()
+
+
+def get_db_connection():
+    conn = connector.connect(
+        os.getenv("CLOUD_SQL_CONNECTION_NAME"),
+        "pg8000",
+        user=os.getenv("CLOUD_SQL_USER"),
+        password=os.getenv("CLOUD_SQL_PASSWORD"),
+        db=os.getenv("CLOUD_SQL_DATABASE_NAME"),
+    )
+    return conn
+
+
+pool = sqlalchemy.create_engine(
+    "postgresql+pg8000://",
+    creator=get_db_connection,
+)
 
 firebase_config = {
     "apiKey": os.environ.get("FIREBASE_API_KEY"),
@@ -40,9 +62,17 @@ def root():
             claims = google.oauth2.id_token.verify_firebase_token(
                 id_token, firebase_request_adapter
             )
+            user_email_address = claims["email"]
             current_date_time = datetime.datetime.now(tz=datetime.timezone.utc)
-            store_time(claims["email"], current_date_time)
-            times = fetch_times(claims["email"], 10)
+            store_time(user_email_address, current_date_time)
+            times = fetch_times(user_email_address, 5)
+
+            with pool.connect() as conn:
+                query = sqlalchemy.text(
+                    "SELECT website, password FROM password_vault WHERE user_id = :user_id LIMIT 5"
+                )
+                result = conn.execute(query, {"user_id": user_email_address})
+                password_info = result.fetchall()
 
         except ValueError as exc:
             error_message = str(exc)
@@ -53,6 +83,7 @@ def root():
         error_message=error_message,
         times=times,
         firebase_config=firebase_config,
+        password_info=password_info,
     )
 
 

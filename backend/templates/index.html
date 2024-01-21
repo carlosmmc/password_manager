@@ -39,16 +39,30 @@
         <h2>Login info:</h2>
         {% if user_data %}
         <dl>
-            <dt>Name</dt>
-            <dd>{{ user_data['name'] }}</dd>
-            <dt>Email</dt>
-            <dd>{{ user_data['email'] }}</dd>
-            <dt>Last 10 visits</dt>
-            <dd>
+            <dt><b>User Email:</b> {{ user_data['email'] }}</dt>
+            <table>
+                <tr>
+                    <th>Last access times</th>
+                </tr>
                 {% for time in times %}
-                <p>{{ time['timestamp'] }}</p>
+                <tr>
+                    <td>{{ time["timestamp"] }}</td>
+                </tr>
                 {% endfor %}
-            </dd>
+            </table>
+
+            <table>
+                <tr>
+                    <th>Website</th>
+                    <th>Password</th>
+                </tr>
+                {% for website, password in password_info %}
+                <tr>
+                    <td>{{ website }}</td>
+                    <td>{{ password }}</td>
+                </tr>
+                {% endfor %}
+            </table>
         </dl>
         {% elif error_message %}
         <p>Error: {{ error_message }}</p>
