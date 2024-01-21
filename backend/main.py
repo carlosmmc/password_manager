@@ -16,15 +16,21 @@ init_auth_middleware(app)
 
 @app.route("/")
 def root():
-    user_email_address = g.user["email"]
-    current_date_time = datetime.datetime.now(tz=datetime.timezone.utc)
-    store_time(user_email_address, current_date_time)
-    times = fetch_times(user_email_address, 5)
-    password_info = get_user_passwords(user_email_address, limit=5)
+    user = g.user if g.user else None
+    current_date_time = None
+    times = None
+    password_info = None
+
+    if user:
+        user_email_address = user["email"]
+        current_date_time = datetime.datetime.now(tz=datetime.timezone.utc)
+        store_time(user_email_address, current_date_time)
+        times = fetch_times(user_email_address, 5)
+        password_info = get_user_passwords(user_email_address, limit=5)
 
     return render_template(
         "index.html",
-        user_data=g.user,
+        user_data=user,
         times=times,
         firebase_config=get_firebase_config(),
         password_info=password_info,

@@ -5,6 +5,7 @@ Here are links I have bookmarked for convenience:
 * **Github repo** - https://github.com/carlosmmc/password_manager
 * **GCP console** - https://console.cloud.google.com/home/dashboard?project=password-manager-osu&supportedpurview=project
 * **Firebase console** - https://console.firebase.google.com/u/0/project/password-manager-osu/overview
+* **Link to prod** - https://password-manager-osu.wl.r.appspot.com
 
 
 ## Github Repository Details
@@ -67,7 +68,7 @@ After you all do all of that you should just be able to run the following comman
 This is my first time working with it but so far it has been pretty smooth. I'm sure there's going to be some kinks getting everything set up for all of us to be productive but I tried to frontload at least some of that friction by writing up this section. Here are a couple of quick notes:
 * I added both of you all as editors on the project. This should give you all broad access to do everything you need to do but if you run into permission issues let me know and we can see how to fix it.
 * If you haven't worked with GCP before I recommend doing one of the tutorials as it will walk you through a lot of helpful information and won't take too long. I followed this tutorial and in general thought it was excellent: https://cloud.google.com/appengine/docs/standard/python3/building-app.
-* As a quick reference here are the commands we will all be using a lot:
+* As a quick reference here are the commands we will all be using a lot (before you can run these I think you'll need to set up your local enviornment to be authorized to do this - i think these instructions will be relevant https://cloud.google.com/sdk/docs/initializing):
    * deploy an app -> `gcloud app deploy`
    * go to the app -> `gcloud app browse`
 

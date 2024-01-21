@@ -23,6 +23,3 @@ def init_auth_middleware(app):
 
             except ValueError as exc:
                 return jsonify({"error": str(exc)}), 401
-
-        if not g.user:
-            return jsonify({"error": "Unauthorized access"}), 401
