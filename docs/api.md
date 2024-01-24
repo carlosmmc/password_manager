@@ -170,7 +170,7 @@ GET /api/v1/accounts/:account_id/items
     "enc": "A256GCM",
     "cty": "b5+jwk+json",
     "data": "jemccouandsfbfrh7au",
-    "self": "http://localhost:8080/api/v1/accounts/1234/items/2345"
+    "self": "http://localhost:8080/api/v1/accounts/1234/items/5678"
   }
 ]
 ```
