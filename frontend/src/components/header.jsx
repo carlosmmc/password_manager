@@ -8,8 +8,8 @@ const Header = () => {
         expand="lg"
         className="bg-body-navbar navbar-expand-lg bg-primary"
         data-bs-theme="dark">
-        <Container class="container-fluid">
-          <Navbar.Brand class="navbar-brand" href="/">
+        <Container className="container-fluid">
+          <Navbar.Brand className="navbar-brand" href="/">
             Secure Password Manager
           </Navbar.Brand>
           <Navbar.Toggle aria-controls="basic-navbar-nav" />
