@@ -1,5 +1,11 @@
 from flask import Blueprint, request, jsonify
-from .helpers import Param, are_parameters_valid, BASE_PATH, get_base_url
+from .helpers import (
+    Param,
+    are_parameters_valid,
+    BASE_PATH,
+    get_base_url,
+    HttpStatusCode,
+)
 
 credentials_blueprint = Blueprint("credentials", __name__)
 
@@ -20,7 +26,7 @@ def create_credential(account_id):
 
     validation_result = are_parameters_valid(data, _credential_modify_params)
     if not validation_result.is_valid:
-        return (jsonify(validation_result.error_msgs), 400)
+        return (jsonify(validation_result.error_msgs), HttpStatusCode.BAD_REQUEST)
 
     created_id = 8910
 
@@ -31,7 +37,7 @@ def create_credential(account_id):
                 "self": f"{base_url}/api/v1/accounts/{created_id}",
             }
         ),
-        201,
+        HttpStatusCode.CREATED,
     )
 
 
@@ -62,7 +68,7 @@ def view_all_credentials(account_id):
                 },
             ]
         ),
-        201,
+        HttpStatusCode.OK,
     )
 
 
@@ -83,7 +89,7 @@ def view_credential(account_id, credential_id):
                 "data": "rdfthyukjlA4nmajhgf",
             }
         ),
-        201,
+        HttpStatusCode.OK,
     )
 
 
@@ -99,7 +105,7 @@ def edit_credential(account_id, credential_id):
 
     validation_result = are_parameters_valid(data, _credential_modify_params)
     if not validation_result.is_valid:
-        return (jsonify(validation_result.error_msgs), 400)
+        return (jsonify(validation_result.error_msgs), HttpStatusCode.BAD_REQUEST)
 
     return (
         jsonify(
@@ -108,7 +114,7 @@ def edit_credential(account_id, credential_id):
                 "self": f"{base_url}/api/v1/accounts/{credential_id}",
             }
         ),
-        201,
+        HttpStatusCode.OK,
     )
 
 
@@ -121,5 +127,5 @@ def delete_credential(account_id, credential_id):
 
     return (
         jsonify({"id": credential_id}),
-        201,
+        HttpStatusCode.OK,
     )

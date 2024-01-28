@@ -335,6 +335,15 @@ DELETE /api/v1/accounts/:account_id/items/:credential_id
 
 **Response Examples**
 
+_Status: 200 Ok_
+
+```JSON
+{
+  "id": 1234,
+}
+```
+
+
 _Status: 404 Not Found_
 
 ```JSON

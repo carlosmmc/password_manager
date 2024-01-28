@@ -1,5 +1,11 @@
 from flask import Blueprint, request, jsonify
-from .helpers import Param, are_parameters_valid, BASE_PATH, get_base_url
+from .helpers import (
+    Param,
+    are_parameters_valid,
+    BASE_PATH,
+    get_base_url,
+    HttpStatusCode,
+)
 
 accounts_blueprint = Blueprint("accounts", __name__)
 
@@ -13,7 +19,7 @@ def create_account():
 
     validation_result = are_parameters_valid(data, _create_account_params)
     if not validation_result.is_valid:
-        return (jsonify(validation_result.error_msgs), 400)
+        return (jsonify(validation_result.error_msgs), HttpStatusCode.BAD_REQUEST)
 
     email = data["email"]
     created_id = 1234
@@ -25,5 +31,5 @@ def create_account():
                 "self": f"{base_url}/api/v1/accounts/{created_id}",
             }
         ),
-        201,
+        HttpStatusCode.CREATED,
     )

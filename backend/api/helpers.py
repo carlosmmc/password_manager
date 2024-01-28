@@ -1,5 +1,6 @@
 from collections import namedtuple
 from typing import List
+from enum import Enum
 
 Param = namedtuple("Param", ["name", "type"])
 ParamValidation = namedtuple("ParamValidation", ["is_valid", "error_msgs"])
@@ -17,8 +18,18 @@ def are_parameters_valid(data: dict, expected_params: List[Param]) -> ParamValid
             error_msgs.append(msg)
 
     is_valid = True if error_msgs == [] else False
-    return ParamValidation(is_valid, {"errors": error_msgs})
+    return ParamValidation(is_valid, {"Error": error_msgs})
 
 
 def get_base_url(request):
     return request.url_root.rstrip("/")
+
+
+class HttpStatusCode(Enum):
+    OK = 200
+    CREATED = 201
+    NO_CONTENT = 204
+    BAD_REQUEST = 400
+    UNAUTHORIZED = 401
+    NOT_ACCEPTABLE = 406
+    NOT_FOUND = 404
