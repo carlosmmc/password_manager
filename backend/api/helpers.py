@@ -2,6 +2,7 @@ from collections import namedtuple
 from typing import List
 
 Param = namedtuple("Param", ["name", "type"])
+BASE_URL = "/api/v1/accounts"
 
 
 def are_parameters_valid(data: dict, expected_params: List[Param]) -> bool:

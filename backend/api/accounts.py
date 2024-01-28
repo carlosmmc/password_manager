@@ -1,9 +1,7 @@
 from flask import Blueprint, request, jsonify
-from .helpers import Param, are_parameters_valid
+from .helpers import Param, are_parameters_valid, BASE_URL
 
 accounts_blueprint = Blueprint("accounts", __name__)
-
-BASE_URL = "/api/v1/accounts"
 
 
 @accounts_blueprint.route(BASE_URL, methods=["POST"])
