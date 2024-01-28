@@ -54,7 +54,7 @@ _Status: 400 Bad Request_
 
 ```JSON
 {
-  "Error": "The request is missing one or more required attributes"
+  "Error": ["The request is missing one or more required attributes"]
 }
 ```
 
@@ -120,7 +120,7 @@ _Status: 400 Bad Request_
 
 ```JSON
 {
-  "Error": "The request is missing one or more required attributes"
+  "Error": ["The request is missing one or more required attributes"]
 }
 ```
 
@@ -179,7 +179,7 @@ _Status: 406 Not Acceptable_
 
 ```JSON
 {
-  "Error": "Accept header must include JSON"
+  "Error": ["Accept header must include JSON"]
 }
 ```
 
@@ -229,7 +229,7 @@ _Status: 406 Not Acceptable_
 
 ```JSON
 {
-  "Error": "Accept header must include JSON"
+  "Error": ["Accept header must include JSON"]
 }
 ```
 
@@ -300,7 +300,7 @@ _Status: 400 Bad Request_
 
 ```JSON
 {
-  "Error": "The request is missing one or more required attributes"
+  "Error": ["The request is missing one or more required attributes"]
 }
 ```
 
@@ -348,6 +348,6 @@ _Status: 404 Not Found_
 
 ```JSON
 {
-  "Error": "Item not found"
+  "Error": ["Item not found"]
 }
 ```
