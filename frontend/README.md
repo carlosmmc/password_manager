@@ -1,6 +1,15 @@
-# Getting Started with Create React App
+# Getting Started with the Front End React App
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+
+## Before Running the App
+* Make sure you have a `.env` file in the `./frontend` folder that has the keys for:
+    * Firebase
+* In your `.env` file, all the keys name start with **`REACT_APP_`**.
+    * Example
+        ```bash
+        REACT_APP_FIREBASE_API_KEY="YOURAPIKEY"
+        ```
 
 ## Available Scripts
 
