@@ -4,7 +4,7 @@ from .helpers import (
     are_parameters_valid,
     BASE_PATH,
     get_base_url,
-    HttpStatusCode,
+    StatusCode,
 )
 
 credentials_blueprint = Blueprint("credentials", __name__)
@@ -26,7 +26,7 @@ def create_credential(account_id):
 
     validation_result = are_parameters_valid(data, _credential_modify_params)
     if not validation_result.is_valid:
-        return (jsonify(validation_result.error_msgs), HttpStatusCode.BAD_REQUEST)
+        return (jsonify(validation_result.error_msgs), StatusCode.BAD_REQUEST.value)
 
     created_id = 8910
 
@@ -37,7 +37,7 @@ def create_credential(account_id):
                 "self": f"{base_url}/api/v1/accounts/{created_id}",
             }
         ),
-        HttpStatusCode.CREATED,
+        StatusCode.CREATED.value,
     )
 
 
@@ -68,7 +68,7 @@ def view_all_credentials(account_id):
                 },
             ]
         ),
-        HttpStatusCode.OK,
+        StatusCode.OK.value,
     )
 
 
@@ -89,7 +89,7 @@ def view_credential(account_id, credential_id):
                 "data": "rdfthyukjlA4nmajhgf",
             }
         ),
-        HttpStatusCode.OK,
+        StatusCode.OK.value,
     )
 
 
@@ -105,7 +105,7 @@ def edit_credential(account_id, credential_id):
 
     validation_result = are_parameters_valid(data, _credential_modify_params)
     if not validation_result.is_valid:
-        return (jsonify(validation_result.error_msgs), HttpStatusCode.BAD_REQUEST)
+        return (jsonify(validation_result.error_msgs), StatusCode.BAD_REQUEST.value)
 
     return (
         jsonify(
@@ -114,7 +114,7 @@ def edit_credential(account_id, credential_id):
                 "self": f"{base_url}/api/v1/accounts/{credential_id}",
             }
         ),
-        HttpStatusCode.OK,
+        StatusCode.OK.value,
     )
 
 
@@ -127,5 +127,5 @@ def delete_credential(account_id, credential_id):
 
     return (
         jsonify({"id": credential_id}),
-        HttpStatusCode.OK,
+        StatusCode.OK.value,
     )

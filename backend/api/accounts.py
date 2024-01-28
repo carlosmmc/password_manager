@@ -4,7 +4,7 @@ from .helpers import (
     are_parameters_valid,
     BASE_PATH,
     get_base_url,
-    HttpStatusCode,
+    StatusCode,
 )
 
 accounts_blueprint = Blueprint("accounts", __name__)
@@ -19,7 +19,7 @@ def create_account():
 
     validation_result = are_parameters_valid(data, _create_account_params)
     if not validation_result.is_valid:
-        return (jsonify(validation_result.error_msgs), HttpStatusCode.BAD_REQUEST)
+        return (jsonify(validation_result.error_msgs), StatusCode.BAD_REQUEST.value)
 
     email = data["email"]
     created_id = 1234
@@ -31,5 +31,5 @@ def create_account():
                 "self": f"{base_url}/api/v1/accounts/{created_id}",
             }
         ),
-        HttpStatusCode.CREATED,
+        StatusCode.CREATED.value,
     )

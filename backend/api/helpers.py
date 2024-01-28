@@ -25,7 +25,7 @@ def get_base_url(request):
     return request.url_root.rstrip("/")
 
 
-class HttpStatusCode(Enum):
+class StatusCode(Enum):
     OK = 200
     CREATED = 201
     NO_CONTENT = 204
