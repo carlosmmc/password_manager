@@ -1,13 +1,13 @@
 from flask import Blueprint, request, jsonify
-from .helpers import Param, are_parameters_valid, BASE_URL
+from .helpers import Param, are_parameters_valid, BASE_PATH, get_base_url
 
 accounts_blueprint = Blueprint("accounts", __name__)
 
 
-@accounts_blueprint.route(BASE_URL, methods=["POST"])
+@accounts_blueprint.route(BASE_PATH, methods=["POST"])
 def create_account():
     data = request.get_json()
-    base_url = request.url_root.rstrip("/")
+    base_url = get_base_url(request)
 
     expected_params = [Param("email", str)]
 

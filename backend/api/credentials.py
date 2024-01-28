@@ -1,13 +1,13 @@
 from flask import Blueprint, request, jsonify
-from .helpers import Param, are_parameters_valid, BASE_URL
+from .helpers import Param, are_parameters_valid, BASE_PATH, get_base_url
 
 credentials_blueprint = Blueprint("credentials", __name__)
 
 
-@credentials_blueprint.route(f"{BASE_URL}/<int:account_id>/items", methods=["POST"])
+@credentials_blueprint.route(f"{BASE_PATH}/<int:account_id>/items", methods=["POST"])
 def create_credential(account_id):
     data = request.get_json()
-    base_url = request.url_root.rstrip("/")
+    base_url = get_base_url(request)
 
     print(f"account_id is: {account_id}")
 
@@ -39,9 +39,9 @@ def create_credential(account_id):
     )
 
 
-@credentials_blueprint.route(f"{BASE_URL}/<int:account_id>/items", methods=["GET"])
+@credentials_blueprint.route(f"{BASE_PATH}/<int:account_id>/items", methods=["GET"])
 def view_all_credentials(account_id):
-    base_url = request.url_root.rstrip("/")
+    base_url = get_base_url(request)
 
     print(f"account_id is: {account_id}")
 
@@ -71,7 +71,7 @@ def view_all_credentials(account_id):
 
 
 @credentials_blueprint.route(
-    f"{BASE_URL}/<int:account_id>/items/<int:credential_id>", methods=["GET"]
+    f"{BASE_PATH}/<int:account_id>/items/<int:credential_id>", methods=["GET"]
 )
 def view_credential(account_id, credential_id):
     print(f"account_id is: {account_id}")
@@ -92,11 +92,11 @@ def view_credential(account_id, credential_id):
 
 
 @credentials_blueprint.route(
-    f"{BASE_URL}/<int:account_id>/items/<int:item_id>", methods=["PUT"]
+    f"{BASE_PATH}/<int:account_id>/items/<int:item_id>", methods=["PUT"]
 )
 def edit_credential(account_id, item_id):
     data = request.get_json()
-    base_url = request.url_root.rstrip("/")
+    base_url = get_base_url(request)
 
     print(f"account_id is: {account_id}")
     print(f"item_id is: {item_id}")
@@ -128,7 +128,7 @@ def edit_credential(account_id, item_id):
 
 
 @credentials_blueprint.route(
-    f"{BASE_URL}/<int:account_id>/items/<int:item_id>", methods=["DELETE"]
+    f"{BASE_PATH}/<int:account_id>/items/<int:item_id>", methods=["DELETE"]
 )
 def delete_credential(account_id, item_id):
     print(f"account_id is: {account_id}")

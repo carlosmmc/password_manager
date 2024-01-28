@@ -2,7 +2,7 @@ from collections import namedtuple
 from typing import List
 
 Param = namedtuple("Param", ["name", "type"])
-BASE_URL = "/api/v1/accounts"
+BASE_PATH = "/api/v1/accounts"
 
 
 def are_parameters_valid(data: dict, expected_params: List[Param]) -> bool:
@@ -14,3 +14,7 @@ def are_parameters_valid(data: dict, expected_params: List[Param]) -> bool:
             return False
 
     return True
+
+
+def get_base_url(request):
+    return request.url_root.rstrip("/")

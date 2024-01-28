@@ -3,7 +3,7 @@
 import datetime
 
 from dotenv import load_dotenv
-from flask import Flask, render_template, g, request, jsonify
+from flask import Flask, render_template, g
 
 from db.cloud_sql import get_user_passwords
 from db.firebase import get_firebase_config, store_time, fetch_times
