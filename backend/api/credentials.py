@@ -3,6 +3,13 @@ from .helpers import Param, are_parameters_valid, BASE_PATH, get_base_url
 
 credentials_blueprint = Blueprint("credentials", __name__)
 
+_credential_expected_params = [
+    Param("kid", str),
+    Param("enc", str),
+    Param("cty", str),
+    Param("data", str),
+]
+
 
 @credentials_blueprint.route(f"{BASE_PATH}/<int:account_id>/items", methods=["POST"])
 def create_credential(account_id):
@@ -11,14 +18,7 @@ def create_credential(account_id):
 
     print(f"account_id is: {account_id}")
 
-    expected_params = [
-        Param("kid", str),
-        Param("enc", str),
-        Param("cty", str),
-        Param("data", str),
-    ]
-
-    if not are_parameters_valid(data, expected_params):
+    if not are_parameters_valid(data, _credential_expected_params):
         error_msg = "The request is missing one or more required attributes."
 
         return (
@@ -101,14 +101,7 @@ def edit_credential(account_id, item_id):
     print(f"account_id is: {account_id}")
     print(f"item_id is: {item_id}")
 
-    expected_params = [
-        Param("kid", str),
-        Param("enc", str),
-        Param("cty", str),
-        Param("data", str),
-    ]
-
-    if not are_parameters_valid(data, expected_params):
+    if not are_parameters_valid(data, _credential_expected_params):
         error_msg = "The request is missing one or more required attributes."
 
         return (

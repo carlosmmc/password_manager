@@ -3,15 +3,15 @@ from .helpers import Param, are_parameters_valid, BASE_PATH, get_base_url
 
 accounts_blueprint = Blueprint("accounts", __name__)
 
+_create_account_params = [Param("email", str)]
+
 
 @accounts_blueprint.route(BASE_PATH, methods=["POST"])
 def create_account():
     data = request.get_json()
     base_url = get_base_url(request)
 
-    expected_params = [Param("email", str)]
-
-    if not are_parameters_valid(data, expected_params):
+    if not are_parameters_valid(data, _create_account_params):
         error_msg = (
             'Invalid request, "email" must be included and be of the string type.'
         )
