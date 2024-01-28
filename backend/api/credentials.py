@@ -3,7 +3,7 @@ from .helpers import Param, are_parameters_valid, BASE_PATH, get_base_url
 
 credentials_blueprint = Blueprint("credentials", __name__)
 
-_credential_expected_params = [
+_credential_modify_params = [
     Param("kid", str),
     Param("enc", str),
     Param("cty", str),
@@ -18,13 +18,9 @@ def create_credential(account_id):
 
     print(f"account_id is: {account_id}")
 
-    if not are_parameters_valid(data, _credential_expected_params):
-        error_msg = "The request is missing one or more required attributes."
-
-        return (
-            jsonify({"error": error_msg}),
-            400,
-        )
+    validation_result = are_parameters_valid(data, _credential_modify_params)
+    if not validation_result.is_valid:
+        return (jsonify(validation_result.error_msgs), 400)
 
     created_id = 8910
 
@@ -92,28 +88,24 @@ def view_credential(account_id, credential_id):
 
 
 @credentials_blueprint.route(
-    f"{BASE_PATH}/<int:account_id>/items/<int:item_id>", methods=["PUT"]
+    f"{BASE_PATH}/<int:account_id>/items/<int:credential_id>", methods=["PUT"]
 )
-def edit_credential(account_id, item_id):
+def edit_credential(account_id, credential_id):
     data = request.get_json()
     base_url = get_base_url(request)
 
     print(f"account_id is: {account_id}")
-    print(f"item_id is: {item_id}")
+    print(f"credential_id is: {credential_id}")
 
-    if not are_parameters_valid(data, _credential_expected_params):
-        error_msg = "The request is missing one or more required attributes."
-
-        return (
-            jsonify({"error": error_msg}),
-            400,
-        )
+    validation_result = are_parameters_valid(data, _credential_modify_params)
+    if not validation_result.is_valid:
+        return (jsonify(validation_result.error_msgs), 400)
 
     return (
         jsonify(
             {
-                "id": item_id,
-                "self": f"{base_url}/api/v1/accounts/{item_id}",
+                "id": credential_id,
+                "self": f"{base_url}/api/v1/accounts/{credential_id}",
             }
         ),
         201,
@@ -121,13 +113,13 @@ def edit_credential(account_id, item_id):
 
 
 @credentials_blueprint.route(
-    f"{BASE_PATH}/<int:account_id>/items/<int:item_id>", methods=["DELETE"]
+    f"{BASE_PATH}/<int:account_id>/items/<int:credential_id>", methods=["DELETE"]
 )
-def delete_credential(account_id, item_id):
+def delete_credential(account_id, credential_id):
     print(f"account_id is: {account_id}")
-    print(f"item_id is: {item_id}")
+    print(f"credential_id is: {credential_id}")
 
     return (
-        jsonify({"id": item_id}),
+        jsonify({"id": credential_id}),
         201,
     )

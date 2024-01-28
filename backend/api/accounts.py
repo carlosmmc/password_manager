@@ -11,15 +11,9 @@ def create_account():
     data = request.get_json()
     base_url = get_base_url(request)
 
-    if not are_parameters_valid(data, _create_account_params):
-        error_msg = (
-            'Invalid request, "email" must be included and be of the string type.'
-        )
-
-        return (
-            jsonify({"error": error_msg}),
-            400,
-        )
+    validation_result = are_parameters_valid(data, _create_account_params)
+    if not validation_result.is_valid:
+        return (jsonify(validation_result.error_msgs), 400)
 
     email = data["email"]
     created_id = 1234
