@@ -54,7 +54,7 @@ _Status: 400 Bad Request_
 
 ```JSON
 {
-  "Error": "The request is missing one or more required attributes"
+  "Error": ["The request is missing one or more required attributes"]
 }
 ```
 
@@ -120,7 +120,7 @@ _Status: 400 Bad Request_
 
 ```JSON
 {
-  "Error": "The request is missing one or more required attributes"
+  "Error": ["The request is missing one or more required attributes"]
 }
 ```
 
@@ -179,7 +179,7 @@ _Status: 406 Not Acceptable_
 
 ```JSON
 {
-  "Error": "Accept header must include JSON"
+  "Error": ["Accept header must include JSON"]
 }
 ```
 
@@ -191,10 +191,10 @@ GET /api/v1/accounts/:account_id/credentials/:credential_id
 
 **Path Parameters**
 
-| Name       | Description           |
-| ---------- | --------------------- |
-| account_id | The user's account ID |
-| item_id    | The credential's ID   |
+| Name          | Description           |
+| ------------- | --------------------- |
+| account_id    | The user's account ID |
+| credential_id | The credential's ID   |
 
 **Request Body Required?** No  
 **Request Body Format** N/A  
@@ -229,22 +229,22 @@ _Status: 406 Not Acceptable_
 
 ```JSON
 {
-  "Error": "Accept header must include JSON"
+  "Error": ["Accept header must include JSON"]
 }
 ```
 
 ## Edit a Set of Credentials
 
-PUT /api/v1/accounts/:account_id/items/:item_id
+PUT /api/v1/accounts/:account_id/items/:credential_id
 
-### Request to PUT /api/v1/accounts/:account_id/items/:item_id
+### Request to PUT /api/v1/accounts/:account_id/items/:credential_id
 
 **Path Parameters**
 
-| Name       | Description           |
-| ---------- | --------------------- |
-| account_id | The user's account ID |
-| item_id    | The credential's ID   |
+| Name          | Description           |
+| ------------- | --------------------- |
+| account_id    | The user's account ID |
+| credential_id | The credential's ID   |
 
 **Request Body Required?** Yes  
 **Request Body Format** JSON
@@ -300,45 +300,54 @@ _Status: 400 Bad Request_
 
 ```JSON
 {
-  "Error": "The request is missing one or more required attributes"
+  "Error": ["The request is missing one or more required attributes"]
 }
 ```
 
 ## Delete a Set of Credentials
 
-DELETE /api/v1/accounts/:account_id/items/:item_id
+DELETE /api/v1/accounts/:account_id/items/:credential_id
 
-### Request to DELETE /api/v1/accounts/:account_id/items/:item_id
+### Request to DELETE /api/v1/accounts/:account_id/items/:credential_id
 
 **Path Parameters**
 
-| Name       | Description           |
-| ---------- | --------------------- |
-| account_id | The user's account ID |
-| item_id    | The credential's ID   |
+| Name          | Description           |
+| ------------- | --------------------- |
+| account_id    | The user's account ID |
+| credential_id | The credential's ID   |
 
 **Request Body Required?** No  
 **Request Body Format** N/A  
 **Request Attributes** N/A  
 **Request Example** N/A
 
-### Response to DELETE /api/v1/accounts/:account_id/items/:item_id
+### Response to DELETE /api/v1/accounts/:account_id/items/:credential_id
 
 **Response Body Format** JSON
 
 **Response Statuses**
 
-| Outcome | Status Code    | Notes                            |
-| ------- | -------------- | -------------------------------- |
-| Success | 204 No Content |                                  |
-| Success | 404 Not Found  | No credentials with that item_id |
+| Outcome | Status Code    | Notes                                  |
+| ------- | -------------- | -------------------------------------- |
+| Success | 204 No Content |                                        |
+| Success | 404 Not Found  | No credentials with that credential_id |
 
 **Response Examples**
+
+_Status: 200 Ok_
+
+```JSON
+{
+  "id": 1234,
+}
+```
+
 
 _Status: 404 Not Found_
 
 ```JSON
 {
-  "Error": "Item not found"
+  "Error": ["Item not found"]
 }
 ```
