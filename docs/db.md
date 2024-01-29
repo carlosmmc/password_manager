@@ -2,36 +2,35 @@
 
 ## Tables
 
+The "Unique?" column indicates whether or not the database will enforce uniqueness for the column. PostgreSQL automatically indexes unique columns.
+
 ### Users
 
-| Property | Type    | Notes                                                          |
-| -------- | ------- | -------------------------------------------------------------- |
-| id       | Integer | Auto-generated Primary Key for this row                        |
-| api_id   | String  | 26-character public-facing id made up of numbers and letters   |
-| email    | String  | Email address used to sign up for the service                  |
-| key      | Integer | ID of the public/private key set for this user. FK on Key Sets |
+| Property | Type        | Unique? | Notes                                                          |
+| -------- | ----------- | ------- | -------------------------------------------------------------- |
+| id       | uuid        | Yes     | Primary Key for this row                                       |
+| email    | varchar(50) | Yes     | Email address used to sign up for the service                  |
+| key      | uuid        | Yes     | ID of the public/private key set for this user. FK on Key Sets |
 
 ### Items
 
-| Property | Type    | Notes                                                        |
-| -------- | ------- | ------------------------------------------------------------ |
-| id       | Integer | Auto-generated Primary Key for this row                      |
-| uid      | Integer | User that owns this item. Foreign Key on Users.              |
-| api_id   | String  | 26-character public-facing id made up of numbers and letters |
-| key      | Integer | Key used to decrypt this item. Foreign Key on Key Sets       |
-| overview | String  | Encrypted identifying info for the item                      |
-| details  | String  | Encrypted item details                                       |
+| Property | Type          | Unique? | Notes                                                  |
+| -------- | ------------- | ------- | ------------------------------------------------------ |
+| id       | uuid          | Yes     | Primary Key for this row                               |
+| uid      | uuid          | Yes     | User that owns this item. Foreign Key on Users         |
+| key      | uuid          | Yes     | Key used to decrypt this item. Foreign Key on Key Sets |
+| overview | varchar(1024) | No      | Encrypted identifying info                             |
+| details  | varchar(1024) | No      | Encrypted item details                                 |
 
 ### Key Sets
 
-| Property    | Type    | Notes                                                      |
-| ----------- | ------- | ---------------------------------------------------------- |
-| id          | Integer | Auto-generated Primary Key for this row                    |
-| uid         | Integer | User that owns this key. Foreign Key on Users.             |
-| api_id      | String  | 26-character public-facing id made up of numbers & letters |
-| public_key  | String  | JWK with the unencrypted public key                        |
-| private_key | String  | Encrypted private key                                      |
-| account_key | String  | Key that unlocks the user's data                           |
+| Property    | Type          | Unique? | Notes                                          |
+| ----------- | ------------- | ------- | ---------------------------------------------- |
+| id          | uuid          | Yes     | Auto-generated Primary Key for this row        |
+| uid         | uuid          | Yes     | User that owns this key. Foreign Key on Users. |
+| public_key  | jsonb         | No      | JWK with the unencrypted public key            |
+| private_key | varchar(1024) | No      | Encrypted private key                          |
+| account_key | varchar(1024) | No      | Encrypted key that unlocks the user's data     |
 
 ## Relationships Between Entities
 
