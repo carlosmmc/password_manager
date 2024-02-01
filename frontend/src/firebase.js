@@ -1,5 +1,5 @@
 import { initializeApp } from "firebase/app";
-import { getAuth, GoogleAuthProvider } from "firebase/auth";
+import { getAuth, onAuthStateChanged, GoogleAuthProvider } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
 import { getStorage } from "firebase/storage";
 import firebase from "firebase/compat/app";
@@ -18,6 +18,7 @@ export const uiConfig = {
   // Whether to upgrade anonymous users should be explicitly provided.
   // The user must already be signed in anonymously before FirebaseUI is
   // rendered.
+  signInFlow: 'popup',
   autoUpgradeAnonymousUsers: true,
   signInSuccessUrl: "/account",
   signInOptions: [
@@ -48,6 +49,19 @@ const app = initializeApp(firebaseConfig);
 
 export const auth = getAuth(app);
 export const ui = new firebaseui.auth.AuthUI(auth);
+
+export async function getSignInStatus() {
+  return new Promise((resolve, reject) => {
+    onAuthStateChanged(auth,  (user) => {
+      if (user) {     
+        resolve(true);
+      } else {
+        reject(false);
+      }
+    });
+  });
+}
+
 export const googleProvider = new GoogleAuthProvider();
 
 export const db = getFirestore(app);
