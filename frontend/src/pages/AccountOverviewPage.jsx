@@ -7,30 +7,49 @@ import {
   browserSessionPersistence,
 } from "firebase/auth";
 // import * as firebase from "firebase";
-
+import AccountList from "../components/AccountList.jsx";
+import { signOutEvent, useAuth } from "../helpers.js";
 
 const AccountOverviewPage = () => {
   const navigate = useNavigate();
-  const [logOut, setLogOut] = useState(true)
 
+  const { auth, isSignIn } = useAuth();
+
+  const [apps, setApps] = useState([]);
+
+  const loadApps = async () => {
+    const response = await fetch("/api/v1/accounts/1234/items");
+    const data = await response.json();
+    setApps(data);
+  };
+  useEffect(() => {
+    loadApps();
+  }, []);
 
   return (
     <>
-      <div>Account Overview</div>
+      <h3>Account Overview</h3>
+      {!isSignIn && (
+        <>
+          <h3>Please sign in</h3>
+          <button
+            onClick={(e) => {
+              e.preventDefault();
+              navigate("/");
+            }}
+          >
+            Back to Sign In Page
+          </button>
+        </>
+      )}
 
-      {logOut && <button
-        id="signout"
-        onClick={(e) => {
-          e.preventDefault();
-          auth.signOut().then(() => {
-            console.log("logged out!");
-          });
-          setLogOut(!logOut)
-          //window.location.reload();
-        }}
-      >
-        Sign out
-      </button>}
+      {isSignIn && (
+        <button id="signout" onClick={signOutEvent}>
+          Sign out
+        </button>
+      )}
+
+      {isSignIn && <AccountList accounts={apps} />}
     </>
   );
 };

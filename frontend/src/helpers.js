@@ -1,18 +1,41 @@
-import { useEffect } from 'react';
+import { auth, ui, uiConfig } from "./firebase.js";
+import { useState } from "react";
 
-const useScript = url => {
-  useEffect(() => {
-    const script = document.createElement('script');
-
-    script.src = url;
-    script.async = true;
-
-    document.body.appendChild(script);
-
-    return () => {
-      document.body.removeChild(script);
-    }
-  }, [url]);
+export const signOutEvent = (e) => {
+  e.preventDefault();
+  auth.signOut().then(() => {
+    console.log("logged out!");
+  });
 };
 
-export default useScript;
+export function useAuth(home = false) {
+  const [isSignIn, setSignIn] = useState(false);
+
+  function checkUserSignedIn(user) {
+    if (user) {
+      console.log(`Signed in as: ${user.displayName} (${user.email})`);
+
+      setSignIn(true);
+    } else {
+      console.log("Logged out");
+      if (home) {
+        ui.start("#firebaseui-auth-container", uiConfig);
+      }
+      setSignIn(false);
+    }
+  }
+  var unsubscribe = auth.onAuthStateChanged(function (user) {
+    checkUserSignedIn(user);
+  });
+  auth.onAuthStateChanged(function (user) {
+    checkUserSignedIn(user);
+  });
+  unsubscribe();
+
+  return { auth, isSignIn };
+}
+
+export const useClickDetails = () =>{
+  const[detailsExpand, setDetailsExpand] = useState(false)
+
+}
