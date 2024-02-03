@@ -2,9 +2,9 @@ import React, { useState, useEffect, useRef } from "react";
 import { Modal, Button, Col, Row, InputGroup } from "react-bootstrap";
 import Form from "react-bootstrap/Form";
 import { a1Details } from "../sampledata.js";
+import { generatePassword } from "../randomPassword.js";
 
 const AccountDetails = ({ details }) => {
-  // console.log(details.id);
 
   const [show, setShow] = useState(false);
 
@@ -16,6 +16,10 @@ const AccountDetails = ({ details }) => {
   const handleSliderChange = (e) => {
     setSliderValue(e.target.value);
   };
+
+  const generatePwAndCopy = (e) => {
+    
+  }
 
   return (
     <>
