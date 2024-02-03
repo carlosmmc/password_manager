@@ -4,14 +4,14 @@ import Form from "react-bootstrap/Form";
 import { a1Details } from "../sampledata.js";
 
 const AccountDetails = ({ details }) => {
-  console.log(details.id);
+  // console.log(details.id);
 
   const [show, setShow] = useState(false);
 
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
 
-  const [sliderValue, setSliderValue] = useState(8);
+  const [sliderValue, setSliderValue] = useState(16);
 
   const handleSliderChange = (e) => {
     setSliderValue(e.target.value);
@@ -49,7 +49,7 @@ const AccountDetails = ({ details }) => {
               <Col>
                 <Form.Group className="mb-3" controlId="formBasicEmail">
                   <Form.Label>Email </Form.Label>
-                  <Form.Control type="url" />
+                  <Form.Control type="email"required={true}/>
                 </Form.Group>
               </Col>
               <Col>
@@ -109,7 +109,7 @@ const AccountDetails = ({ details }) => {
                       min={8}
                       max={20}
                       value={sliderValue}
-                      name="hello"
+                      name="sliderBar"
                       onChange={handleSliderChange}
                       className="custom-slider"
                     />

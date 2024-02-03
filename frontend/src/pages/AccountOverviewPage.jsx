@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
-// import * as firebase from "firebase";
+import { setPersistence, browserSessionPersistence } from "firebase/auth";
 import AccountList from "../components/AccountList.jsx";
 import { signOutEvent, useAuth } from "../helpers.js";
 import { Col, Row, Button } from "react-bootstrap";
@@ -9,11 +9,17 @@ const AccountOverviewPage = () => {
   const navigate = useNavigate();
 
   const { auth, isSignIn } = useAuth();
+  setPersistence(auth, browserSessionPersistence)
+  .catch((error) => {
+    console.error(error)
+  });
 
   const [apps, setApps] = useState([]);
 
   const loadApps = async () => {
-    const response = await fetch("/api/v1/accounts/1234/items");
+    const response = await fetch("/api/v1/accounts/1234/items").catch((error) => {
+      console.log(error)
+    });
     const data = await response.json();
     setApps(data);
   };
