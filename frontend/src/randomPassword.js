@@ -50,6 +50,3 @@ function generatePassword(length, uppercase, lowercase, numbers, specialChars) {
 
     return password;
 }
-
-const password = generatePassword(12, true, true, true, true);
-console.log(password);
