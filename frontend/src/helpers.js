@@ -1,5 +1,5 @@
 import { auth, ui, uiConfig } from "./firebase.js";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 export const signOutEvent = (e) => {
   e.preventDefault();
@@ -24,18 +24,18 @@ export function useAuth(home = false) {
       setSignIn(false);
     }
   }
-  var unsubscribe = auth.onAuthStateChanged(function (user) {
-    checkUserSignedIn(user);
-  });
-  auth.onAuthStateChanged(function (user) {
-    checkUserSignedIn(user);
-  });
-  unsubscribe();
+
+  useEffect(() => {
+    const unsubscribe = auth.onAuthStateChanged(function (user) {
+      checkUserSignedIn(user);
+    });
+
+    return () => unsubscribe();
+  }, []);
 
   return { auth, isSignIn };
 }
 
-export const useClickDetails = () =>{
-  const[detailsExpand, setDetailsExpand] = useState(false)
-
-}
+export const useClickDetails = () => {
+  const [detailsExpand, setDetailsExpand] = useState(false);
+};

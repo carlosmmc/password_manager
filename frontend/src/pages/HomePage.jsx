@@ -11,10 +11,10 @@ const HomePage = () => {
 
   return (
     <>
-      {!isSignIn && <h3 className="subtitle">Welcome! Please sign in</h3>}
-      {isSignIn && <h3 className="subtitle">Welcome </h3>}
+      {!isSignIn && <h3 id="subtitle">Welcome! Please sign in</h3>}
+      {isSignIn && <h3 id="subtitle">Welcome, {auth.currentUser.displayName} </h3>}
       <div id="firebaseui-auth-container"></div>
-      {isSignIn && <button onClick={signOutEvent}>
+      {isSignIn && <button type="button" class="btn btn-secondary" onClick={signOutEvent}>
         Sign out
       </button>}
     </>
