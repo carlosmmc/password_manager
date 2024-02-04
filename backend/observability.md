@@ -125,3 +125,12 @@ WHERE log_name = 'projects/password-manager-osu/logs/HTTPS_REQUEST_LOGS'
   AND JSON_EXTRACT_SCALAR(json_payload, '$.endpoint') = 'credentials.view_all_credentials'
 GROUP BY 1, 2
 ```
+
+
+🚨 note - getting things running locally  🚨
+
+If you're getting an error while running the applicaiton locally, try running the command below. GCP needs to know the user which is invoking the applicaiton in order to send logs correctly.
+
+```
+gcloud auth application-default login
+```
