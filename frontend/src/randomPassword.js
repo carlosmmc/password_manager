@@ -1,55 +1,35 @@
-function getRandomInt(max) {
-    return Math.floor(Math.random() * max)
-}
-
-class PasswordCategoryPool {
-    characters;
-    constructor(characters) {
-        this.characters = characters;
-    }
-    genRandomChar() {
-        return this.characters.charAt(getRandomInt(this.characters.length));
-    }
-}
-
-const PasswordCategoryChars = {
-    Uppercase: "ABCDEFGHIJKLMNOPQRSTUVWXYZ",
-    Lowercase: "abcdefghijklmnopqrstuvwxyz",
-    Numbers: "0123456789",
-    SpecialChars: "!@#$%^&*",
-}
-
-function generatePassword(length, uppercase, lowercase, numbers, specialChars) {
-    const UppercasePasswordPool = new PasswordCategoryPool(PasswordCategoryChars.Uppercase);
-    const LowercasePasswordPool = new PasswordCategoryPool(PasswordCategoryChars.Lowercase);
-    const NumbersPasswordPool = new PasswordCategoryPool(PasswordCategoryChars.Numbers);
-    const SpecialCharsPasswordPool = new PasswordCategoryPool(PasswordCategoryChars.SpecialChars);
+export function generatePassword(length, uppercase, lowercase, numbers, specialChars) {
+    // Define character sets
+    const uppercaseChars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    const lowercaseChars = "abcdefghijklmnopqrstuvwxyz";
+    const numberChars = "0123456789";
+    const specialCharChars = "!@#$%^&*";
 
     // Create a character pool based on options
-    let allCharPoolChars = "";
-    if (uppercase) allCharPoolChars += PasswordCategoryChars.Uppercase;
-    if (lowercase) allCharPoolChars += PasswordCategoryChars.Lowercase;
-    if (numbers) allCharPoolChars += PasswordCategoryChars.Numbers;
-    if (specialChars) allCharPoolChars += PasswordCategoryChars.SpecialChars;
+    let charPool = "";
+    if (uppercase) charPool += uppercaseChars;
+    if (lowercase) charPool += lowercaseChars;
+    if (numbers) charPool += numberChars;
+    if (specialChars) charPool += specialCharChars;
 
     // Check if any options are provided
-    if (allCharPoolChars.length === 0) {
+    if (!charPool) {
         console.error("Please select at least one option for the password.");
         return "";
     }
 
-    const AllCharPool = new PasswordCategoryPool(allCharPoolChars);
     let password = "";
 
     // Ensure at least one character from each selected character set is included
-    if (uppercase) password += UppercasePasswordPool.genRandomChar();
-    if (lowercase) password += LowercasePasswordPool.genRandomChar();
-    if (numbers) password += NumbersPasswordPool.genRandomChar();
-    if (specialChars) password += SpecialCharsPasswordPool.genRandomChar();
+    if (uppercase) password += uppercaseChars.charAt(Math.floor(Math.random() * uppercaseChars.length));
+    if (lowercase) password += lowercaseChars.charAt(Math.floor(Math.random() * lowercaseChars.length));
+    if (numbers) password += numberChars.charAt(Math.floor(Math.random() * numberChars.length));
+    if (specialChars) password += specialCharChars.charAt(Math.floor(Math.random() * specialCharChars.length));
 
     // Generate the remaining characters
     for (let i = password.length; i < length; i++) {
-        password += AllCharPool.genRandomChar();
+        const randomIndex = Math.floor(Math.random() * charPool.length);
+        password += charPool.charAt(randomIndex);
     }
 
     // Shuffle the password characters to make it more random
