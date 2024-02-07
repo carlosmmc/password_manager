@@ -3,13 +3,19 @@ import { Modal, Button, Col, Row, InputGroup } from "react-bootstrap";
 import Form from "react-bootstrap/Form";
 import { a1Details } from "../sampledata.js";
 import { generatePassword } from "../randomPassword.js";
+import { IoMdEye, IoMdEyeOff } from "react-icons/io";
 
 const AccountDetails = ({ details }) => {
-
   const [show, setShow] = useState(false);
 
-  const handleClose = () => setShow(false);
-  const handleShow = () => setShow(true);
+  const handleClose = () => {
+    setShow(false);
+    // setValue(a1Details.email);
+  };
+  const handleShow = () => {
+    setShow(true);
+    setValue(a1Details[0]);
+  };
 
   const [sliderValue, setSliderValue] = useState(16);
 
@@ -17,9 +23,20 @@ const AccountDetails = ({ details }) => {
     setSliderValue(e.target.value);
   };
 
-  const generatePwAndCopy = (e) => {
-    
+  const [pwShow, setPwShow] = useState(false);
+
+  const handlePwShow = (e) => {
+    e.preventDefault();
+    setPwShow(!pwShow)
+
   }
+
+  const [value, setValue] = useState("");
+
+  const generatePwAndCopy = (e) => {
+    e.preventDefault()
+
+  };
 
   return (
     <>
@@ -38,13 +55,13 @@ const AccountDetails = ({ details }) => {
               <Col>
                 <Form.Group className="mb-3">
                   <Form.Label>App Name</Form.Label>
-                  <Form.Control type="appName" required={true} />
+                  <Form.Control defaultValue={details.data} type="appName" required={true} />
                 </Form.Group>
               </Col>
               <Col>
                 <Form.Group className="mb-3" controlId="formBasicEmail">
                   <Form.Label>Website URL (Optional)</Form.Label>
-                  <Form.Control type="url" />
+                  <Form.Control defaultValue={value.website} type="url" />
                 </Form.Group>
               </Col>
             </Row>
@@ -53,21 +70,25 @@ const AccountDetails = ({ details }) => {
               <Col>
                 <Form.Group className="mb-3" controlId="formBasicEmail">
                   <Form.Label>Email </Form.Label>
-                  <Form.Control type="email"required={true}/>
+                  <Form.Control defaultValue={value.email} type="email" required={true} />
                 </Form.Group>
               </Col>
               <Col>
-                <Form.Group className="mb-3" controlId="formBasicPassword">
-                  <Form.Label>Password</Form.Label>
-                  <Form.Control type="password" placeholder="Password" />
-                </Form.Group>
+              <Form.Label>Password</Form.Label>
+                <InputGroup className="mb-3">
+                  <Form.Control defaultValue={value.password} type={pwShow ? "text" : "password"} placeholder="Password" />
+                  <Button variant="outline-secondary" id="button-addon2">
+                  {(!pwShow && <IoMdEye onClick={handlePwShow}/>)}
+                  {(pwShow && <IoMdEyeOff onClick={handlePwShow}/>)}
+                      </Button>
+                </InputGroup>
               </Col>
             </Row>
             <Row>
               <Col>
                 <Row>
                   <div style={{ height: 100 + "px" }}>
-                  <Form.Label>Random Password Generated</Form.Label>
+                    <Form.Label>Random Password Generated</Form.Label>
                     <InputGroup className="mb-3">
                       <Form.Control
                         className="form-control form-control-lg"
@@ -84,20 +105,32 @@ const AccountDetails = ({ details }) => {
               </Col>
               <Col>
                 <Row>
-                <Form.Label>Password Requirement</Form.Label>
+                  <Form.Label>Password Requirement</Form.Label>
                   <Col>
                     <Form.Group className="mb-3" controlId="checkNumber">
-                      <Form.Check type="checkbox" label="0-9" defaultChecked={"checked"} />
+                      <Form.Check
+                        type="checkbox"
+                        label="0-9"
+                        defaultChecked={"checked"}
+                      />
                     </Form.Group>
                   </Col>
                   <Col>
                     <Form.Group className="mb-3" controlId="checkLowerCase">
-                      <Form.Check type="checkbox" label="a-z" defaultChecked={"checked"} />
+                      <Form.Check
+                        type="checkbox"
+                        label="a-z"
+                        defaultChecked={"checked"}
+                      />
                     </Form.Group>
                   </Col>
                   <Col>
                     <Form.Group className="mb-3" controlId="checkUpperCase">
-                      <Form.Check type="checkbox" label="A-Z" defaultChecked={"checked"} />
+                      <Form.Check
+                        type="checkbox"
+                        label="A-Z"
+                        defaultChecked={"checked"}
+                      />
                     </Form.Group>
                   </Col>
                   <Col>
