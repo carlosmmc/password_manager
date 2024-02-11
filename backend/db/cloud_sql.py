@@ -2,9 +2,7 @@ import os
 import uuid
 import sqlalchemy
 from google.cloud.sql.connector import Connector, IPTypes
-from api.helpers import (
-    ParamValidation
-)
+from api.helpers import ParamValidation
 
 
 # Helper method to get database connection
@@ -76,17 +74,22 @@ def create_user_account(user_email_address, public_key, private_key, account_key
     ki_query = "INSERT INTO Keys (id, public_key, private_key, account_key) VALUES (:id, :public_key, :private_key, :account_key);"
     execute_insert_query(
         ki_query,
-        {"id": kid, "public_key": public_key, "private_key": private_key,
-         "account_key": account_key},
+        {
+            "id": kid,
+            "public_key": public_key,
+            "private_key": private_key,
+            "account_key": account_key,
+        },
         lambda res: res.fetchall(),
     )
 
     # create new user
     usid = uuid.uuid4().hex
-    ui_query = "INSERT INTO Users (id, email, kid) VALUES (:usid, :user_email_address, :kid);"
+    ui_query = (
+        "INSERT INTO Users (id, email, kid) VALUES (:usid, :user_email_address, :kid);"
+    )
     execute_insert_query(
-        ui_query,
-        {"usid": usid, "user_email_address": user_email_address, "kid": kid}
+        ui_query, {"usid": usid, "user_email_address": user_email_address, "kid": kid}
     )
 
     # return userid[0][0].hex
@@ -120,10 +123,10 @@ def find_user_account(email):
     )
 
     user_info = {
-        'id': e_result[0][0],
-        'public_key': k_result[0][0],
-        'private_key': k_result[0][1],
-        'account_key': k_result[0][2],
+        "id": e_result[0][0],
+        "public_key": k_result[0][0],
+        "private_key": k_result[0][1],
+        "account_key": k_result[0][2],
     }
 
     return ParamValidation(True, user_info)
