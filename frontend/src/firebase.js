@@ -1,5 +1,5 @@
 import { initializeApp } from "firebase/app";
-import { getAuth, GoogleAuthProvider } from "firebase/auth";
+import { getAuth, onAuthStateChanged, GoogleAuthProvider, browserSessionPersistence } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
 import { getStorage } from "firebase/storage";
 import firebase from "firebase/compat/app";
@@ -48,6 +48,7 @@ const app = initializeApp(firebaseConfig);
 
 export const auth = getAuth(app);
 export const ui = new firebaseui.auth.AuthUI(auth);
+
 export const googleProvider = new GoogleAuthProvider();
 
 export const db = getFirestore(app);
