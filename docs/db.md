@@ -10,7 +10,7 @@ The "Unique?" column indicates whether or not the database will enforce uniquene
 | -------- | ----------- | ------- | -------------------------------------------------------------- |
 | id       | uuid        | Yes     | Primary Key for this row                                       |
 | email    | varchar(50) | Yes     | Email address used to sign up for the service                  |
-| key      | uuid        | Yes     | ID of the public/private key set for this user. FK on Key Sets |
+| kid      | uuid        | Yes     | ID of the public/private key set for this user. FK on Key Sets |
 
 ### Items
 
@@ -28,7 +28,7 @@ The "Unique?" column indicates whether or not the database will enforce uniquene
 | ----------- | ------------- | ------- | ---------------------------------------------- |
 | id          | uuid          | Yes     | Auto-generated Primary Key for this row        |
 | uid         | uuid          | Yes     | User that owns this key. Foreign Key on Users. |
-| public_key  | jsonb         | No      | JWK with the unencrypted public key            |
+| public_key  | varchar(1024) | No      | JWK with the unencrypted public key            |
 | private_key | varchar(1024) | No      | Encrypted private key                          |
 | account_key | varchar(1024) | No      | Encrypted key that unlocks the user's data     |
 
