@@ -25,6 +25,7 @@ google-cloud-core==2.4.1
 google-cloud-datastore==2.15.1
 google-cloud-logging==3.9.0
 googleapis-common-protos==1.62.0
+greenlet==3.0.3
 grpc-google-iam-v1==0.13.0
 grpcio==1.60.0
 grpcio-status==1.60.0
@@ -60,6 +61,7 @@ tomli==2.0.1
 tomlkit==0.12.3
 typing_extensions==4.9.0
 urllib3==1.26.18
+uuid==1.30
 Werkzeug==3.0.1
 yarl==1.9.4
 zipp==3.17.0

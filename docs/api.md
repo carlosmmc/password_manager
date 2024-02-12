@@ -14,15 +14,21 @@ POST /api/v1/accounts
 
 **Request Attributes**
 
-| Name  | Description                                   | Type   | Required? |
-| ----- | --------------------------------------------- | ------ | --------- |
-| email | Email address used to sign up for the service | String | Yes       |
+| Name        | Description                                    | Type   | Required? |
+| ----------- | ---------------------------------------------- | ------ | --------- |
+| email       | Email address used to sign up for the service  | String | Yes       |
+| public_key  | A string representation of the public key JSON | String | Yes       |
+| private_key | Encrypted private key for this account         | String | Yes       |
+| account_key | Encrypted account key for this account         | String | Yes       |
 
 **Request Example**
 
 ```JSON
 {
-  "email": "abc@123.com"
+  "email": "abc@123.com",
+  "public_key": "{}",
+  "private_key": "abc",
+  "account_key": "def"
 }
 ```
 
@@ -36,8 +42,8 @@ POST /api/v1/accounts
 | ------- | ------------------ | ------------------------------------- |
 | Success | 201 Created        |                                       |
 | Failure | 400 Bad Request    | Missing email or has extra attributes |
-| Success | 401 Unauthorized   | No auth token or bad auth token       |
-| Success | 406 Not Acceptable | "Accept" header does not include JSON |
+| Failure | 401 Unauthorized   | No auth token or bad auth token       |
+| Failure | 406 Not Acceptable | "Accept" header does not include JSON |
 
 **Response Examples**
 
@@ -45,7 +51,7 @@ _Status: 201 Created_
 
 ```JSON
 {
-  "id": 1234,
+  "id": "1234",
   "self": "http://localhost:8080/api/v1/accounts/1234"
 }
 ```
@@ -55,6 +61,56 @@ _Status: 400 Bad Request_
 ```JSON
 {
   "Error": ["The request is missing one or more required attributes"]
+}
+```
+
+## Find an Account by email
+
+GET /api/v1/accounts?email=:account_email
+
+### Request to GET /api/v1/accounts?email=:account_email
+
+**Path Parameters:**
+
+| Name          | Description      |
+| ------------- | ---------------- |
+| account_email | The user's email |
+
+**Request Body Required?** No  
+**Request Body Format:** N/A
+
+### Response to GET /api/v1/accounts?email=:account_email
+
+**Response Body Format:** JSON
+
+**Response Statuses**
+
+| Outcome | Status Code        | Notes                                 |
+| ------- | ------------------ | ------------------------------------- |
+| Success | 200 OK             |                                       |
+| Failure | 404 Not Found      | Email not found                       |
+| Failure | 401 Unauthorized   | No auth token or bad auth token       |
+| Failure | 406 Not Acceptable | "Accept" header does not include JSON |
+
+**Response Examples**
+
+_Status: 200 OK_
+
+```JSON
+{
+  "id": "1234",
+  "self": "http://localhost:8080/api/v1/accounts/1234",
+  "public_key": "{}",
+  "private_key": "abc",
+  "account_key": "def"
+}
+```
+
+_Status: 404 Not Found_
+
+```JSON
+{
+  "Error": ["The email was not found"]
 }
 ```
 
@@ -74,12 +130,13 @@ POST /api/v1/accounts/:account_id/items
 **Request Body Format** JSON  
 **Request Attributes**
 
-| Name | Description                                    | Type   | Required? |
-| ---- | ---------------------------------------------- | ------ | --------- |
-| kid  | The ID of the key used to encrypt the data     | String | Yes       |
-| enc  | The encryption algorithm                       | String | Yes       |
-| cty  | Content type of the key. Should always be JWK. | String | Yes       |
-| data | Encrypted credential info                      | String | Yes       |
+| Name     | Description                                    | Type   | Required? |
+| -------- | ---------------------------------------------- | ------ | --------- |
+| kid      | The ID of the key used to encrypt the data     | String | Yes       |
+| enc      | The encryption algorithm                       | String | Yes       |
+| cty      | Content type of the key. Should always be JWK. | String | Yes       |
+| overview | Encrypted credential overview                  | String | Yes       |
+| details  | Encrypted credential details                   | String | Yes       |
 
 **Request Example**
 
@@ -88,7 +145,8 @@ POST /api/v1/accounts/:account_id/items
   "kid": "867fghjkl",
   "enc": "A256GCM",
   "cty": "b5+jwk+json",
-  "data": "rdfthyukjlA4nmajhgf"
+  "overview": "rdfthyukjlA4nmajhgf",
+  "details": "wertyuiol23456yujnm"
 }
 ```
 
@@ -102,8 +160,8 @@ POST /api/v1/accounts/:account_id/items
 | ------- | ------------------ | --------------------------------------------------- |
 | Success | 201 Created        |                                                     |
 | Failure | 400 Bad Request    | Missing required attributes or has extra attributes |
-| Success | 401 Unauthorized   | No auth token or bad auth token                     |
-| Success | 406 Not Acceptable | "Accept" header does not include JSON               |
+| Failure | 401 Unauthorized   | No auth token or bad auth token                     |
+| Failure | 406 Not Acceptable | "Accept" header does not include JSON               |
 
 **Response Examples**
 
@@ -111,7 +169,7 @@ _Status: 201 Created_
 
 ```JSON
 {
-  "id": 8910,
+  "id": "8910",
   "self": "http://localhost:8080/accounts/1234/items/8910"
 }
 ```
@@ -149,15 +207,15 @@ GET /api/v1/accounts/:account_id/items
 | Outcome | Status Code        | Notes                                 |
 | ------- | ------------------ | ------------------------------------- |
 | Success | 200 OK             |                                       |
-| Success | 401 Unauthorized   | No auth token or bad auth token       |
-| Success | 406 Not Acceptable | "Accept" header does not include JSON |
+| Failure | 401 Unauthorized   | No auth token or bad auth token       |
+| Failure | 406 Not Acceptable | "Accept" header does not include JSON |
 
 **Response Examples**
 
 ```JSON
 [
   {
-    "id": 8910,
+    "id": "8910",
     "kid": "867fghjkl",
     "enc": "A256GCM",
     "cty": "b5+jwk+json",
@@ -165,7 +223,7 @@ GET /api/v1/accounts/:account_id/items
     "self": "http://localhost:8080/api/v1/accounts/1234/items/8910"
   },
   {
-    "id": 5678,
+    "id": "5678",
     "kid": "867fghjkl",
     "enc": "A256GCM",
     "cty": "b5+jwk+json",
@@ -210,14 +268,14 @@ GET /api/v1/accounts/:account_id/credentials/:credential_id
 | Outcome | Status Code        | Notes                                 |
 | ------- | ------------------ | ------------------------------------- |
 | Success | 200 OK             |                                       |
-| Success | 401 Unauthorized   | No auth token or bad auth token       |
-| Success | 406 Not Acceptable | "Accept" header does not include JSON |
+| Failure | 401 Unauthorized   | No auth token or bad auth token       |
+| Failure | 406 Not Acceptable | "Accept" header does not include JSON |
 
 **Response Examples**
 
 ```JSON
 {
-  "id": 8910,
+  "id": "8910",
   "kid": "867fghjkl",
   "enc": "A256GCM",
   "cty": "b5+jwk+json",
@@ -262,7 +320,7 @@ PUT /api/v1/accounts/:account_id/items/:credential_id
 
 ```JSON
 {
-  "id": 8910,
+  "id": "8910",
   "kid": "867fghjkl",
   "enc": "A256GCM",
   "cty": "b5+jwk+json",
@@ -280,8 +338,8 @@ PUT /api/v1/accounts/:account_id/items/:credential_id
 | ------- | ------------------ | ------------------------------------- |
 | Success | 200 OK             |                                       |
 | Failure | 400 Bad Request    | Missing email or has extra attributes |
-| Success | 401 Unauthorized   | No auth token or bad auth token       |
-| Success | 406 Not Acceptable | "Accept" header does not include JSON |
+| Failure | 401 Unauthorized   | No auth token or bad auth token       |
+| Failure | 406 Not Acceptable | "Accept" header does not include JSON |
 
 **Response Examples**
 
@@ -291,7 +349,7 @@ _Status: 200 OK_
 
 ```JSON
 {
-  "id": 8910,
+  "id": "8910",
   "self": "http://localhost:8080/api/v1/accounts/1234/items/8910"
 }
 ```
@@ -331,18 +389,9 @@ DELETE /api/v1/accounts/:account_id/items/:credential_id
 | Outcome | Status Code    | Notes                                  |
 | ------- | -------------- | -------------------------------------- |
 | Success | 204 No Content |                                        |
-| Success | 404 Not Found  | No credentials with that credential_id |
+| Failure | 404 Not Found  | No credentials with that credential_id |
 
 **Response Examples**
-
-_Status: 200 Ok_
-
-```JSON
-{
-  "id": 1234,
-}
-```
-
 
 _Status: 404 Not Found_
 

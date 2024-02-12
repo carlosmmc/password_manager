@@ -161,4 +161,8 @@ cython_debug/
 
 .DS_Store
 
+# logs
+logfile
+
+# editors
 .vscode
