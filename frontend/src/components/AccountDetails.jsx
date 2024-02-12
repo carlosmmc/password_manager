@@ -14,6 +14,8 @@ const AccountDetails = ({ details }) => {
   const handleShow = () => {
     setShow(true);
     setValue(a1Details[0]);
+    setRandomPw("")
+    setPwShow(false)
   };
 
   const [sliderValue, setSliderValue] = useState(16);
@@ -45,6 +47,7 @@ const AccountDetails = ({ details }) => {
       spCharCheck
     );
     setRandomPw(pw)
+    console.log(randomPw)
   };
 
   const handleNumCheck = (e) => {
