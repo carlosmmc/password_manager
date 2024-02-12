@@ -16,6 +16,11 @@ const AccountDetails = ({ details }) => {
     setValue(a1Details[0]);
     setRandomPw("");
     setPwShow(false);
+    setSliderValue(16);
+    setUpperCheck(true);
+    setLowerCheck(true);
+    setNumCheck(true);
+    setSpCharCheck(false);
   };
 
   const [sliderValue, setSliderValue] = useState(16);
@@ -202,6 +207,7 @@ const AccountDetails = ({ details }) => {
                       <Form.Check
                         type="checkbox"
                         label="!@#$%^&*"
+                        defaultChecked={spCharCheck}
                         onChange={(e) => {
                           setSpCharCheck(!spCharCheck);
                         }}
