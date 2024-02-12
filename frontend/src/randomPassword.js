@@ -23,10 +23,10 @@ export function generatePassword(length, uppercase, lowercase, numbers, specialC
     crypto.getRandomValues(indexArr)
 
     // Ensure at least one character from each selected character set is included
-    if (uppercase) password += uppercaseChars.charAt(indexArr[0] % charPool.length)
-    if (lowercase) password += lowercaseChars.charAt(indexArr[1] % charPool.length);
-    if (numbers) password += numberChars.charAt(indexArr[2] % charPool.length);
-    if (specialChars) password += specialCharChars.charAt(indexArr[3] % charPool.length);
+    if (uppercase) password += uppercaseChars.charAt(indexArr[0] % uppercaseChars.length)
+    if (lowercase) password += lowercaseChars.charAt(indexArr[1] % lowercaseChars.length);
+    if (numbers) password += numberChars.charAt(indexArr[2] % numberChars.length);
+    if (specialChars) password += specialCharChars.charAt(indexArr[3] % specialCharChars.length);
 
     // Generate the remaining characters
     for (let i = password.length; i < length; i++) {
