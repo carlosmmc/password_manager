@@ -83,7 +83,7 @@ const AccountDetails = ({ details }) => {
                 </Form.Group>
               </Col>
               <Col>
-                <Form.Group className="mb-3" controlId="formBasicEmail">
+                <Form.Group className="mb-3" controlId="websiteUrl">
                   <Form.Label>Website URL (Optional)</Form.Label>
                   <Form.Control defaultValue={value.website} type="url" />
                 </Form.Group>
@@ -109,13 +109,13 @@ const AccountDetails = ({ details }) => {
                     type={pwShow ? "text" : "password"}
                     placeholder="Password"
                   />
-                  <Button variant="outline-secondary" id="button-addon2">
+                  <Button variant="outline-secondary" id="button-show">
                     {!pwShow && <IoMdEye onClick={handlePwShow} />}
                     {pwShow && <IoMdEyeOff onClick={handlePwShow} />}
                   </Button>
                   <Button
                     variant="outline-secondary"
-                    id="button-addon2"
+                    id="button-copy"
                     onClick={(e) => {
                       copyText(value.password);
                     }}
@@ -140,14 +140,14 @@ const AccountDetails = ({ details }) => {
                       />
                       <Button
                         variant="outline-secondary"
-                        id="button-addon2"
+                        id="button-generate"
                         onClick={handlePwGenerate}
                       >
                         <IoMdRefresh />
                       </Button>
                       <Button
                         variant="outline-secondary"
-                        id="button-addon2"
+                        id="button-copy2"
                         onClick={(e) => {
                           copyText(randomPw);
                         }}

@@ -19,21 +19,27 @@ export function generatePassword(length, uppercase, lowercase, numbers, specialC
     }
 
     let password = "";
+    const indexArr = new Uint32Array(length)
+    crypto.getRandomValues(indexArr)
 
     // Ensure at least one character from each selected character set is included
-    if (uppercase) password += uppercaseChars.charAt(Math.floor(Math.random() * uppercaseChars.length));
-    if (lowercase) password += lowercaseChars.charAt(Math.floor(Math.random() * lowercaseChars.length));
-    if (numbers) password += numberChars.charAt(Math.floor(Math.random() * numberChars.length));
-    if (specialChars) password += specialCharChars.charAt(Math.floor(Math.random() * specialCharChars.length));
+    if (uppercase) password += uppercaseChars.charAt(indexArr[0] % charPool.length)
+    if (lowercase) password += lowercaseChars.charAt(indexArr[1] % charPool.length);
+    if (numbers) password += numberChars.charAt(indexArr[2] % charPool.length);
+    if (specialChars) password += specialCharChars.charAt(indexArr[3] % charPool.length);
 
     // Generate the remaining characters
     for (let i = password.length; i < length; i++) {
-        const randomIndex = Math.floor(Math.random() * charPool.length);
+        const randomIndex = indexArr[i] % charPool.length;
         password += charPool.charAt(randomIndex);
     }
 
+    const randomSort = new Uint32Array(1)
+    crypto.getRandomValues(randomSort)
+    const randomFloat = randomSort[0] / Math.pow(2, 32)
+
     // Shuffle the password characters to make it more random
-    password = password.split("").sort(() => Math.random() - 0.5).join("");
+    password = password.split("").sort(() => randomFloat - 0.5).join("");
 
     return password;
 }
