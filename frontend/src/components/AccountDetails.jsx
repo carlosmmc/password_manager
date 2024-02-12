@@ -3,14 +3,13 @@ import { Modal, Button, Col, Row, InputGroup } from "react-bootstrap";
 import Form from "react-bootstrap/Form";
 import { a1Details } from "../sampledata.js";
 import { generatePassword } from "../randomPassword.js";
-import { IoMdEye, IoMdEyeOff } from "react-icons/io";
+import { IoMdEye, IoMdEyeOff, IoMdRefresh, IoMdCopy } from "react-icons/io";
 
 const AccountDetails = ({ details }) => {
   const [show, setShow] = useState(false);
-
+  const [value, setValue] = useState("");
   const handleClose = () => {
     setShow(false);
-    // setValue(a1Details.email);
   };
   const handleShow = () => {
     setShow(true);
@@ -27,16 +26,46 @@ const AccountDetails = ({ details }) => {
 
   const handlePwShow = (e) => {
     e.preventDefault();
-    setPwShow(!pwShow)
-
-  }
-
-  const [value, setValue] = useState("");
-
-  const generatePwAndCopy = (e) => {
-    e.preventDefault()
-
+    setPwShow(!pwShow);
   };
+
+  const [numCheck, setNumCheck] = useState(true);
+  const [upperCheck, setUpperCheck] = useState(true);
+  const [lowerCheck, setLowerCheck] = useState(true);
+  const [spCharCheck, setSpCharCheck] = useState(false);
+  const [randomPw, setRandomPw] = useState("")
+
+  const handlePwGenerate = (e) => {
+    e.preventDefault();
+    const pw = generatePassword(
+      sliderValue,
+      upperCheck,
+      lowerCheck,
+      numCheck,
+      spCharCheck
+    );
+    setRandomPw(pw)
+  };
+
+  const handleNumCheck = (e) => {
+    setNumCheck(!numCheck);
+  };
+
+  const handleUpperCheck = (e) => {
+    setUpperCheck(!upperCheck);
+  };
+
+  const handleLowerCheck = (e) => {
+    setLowerCheck(!lowerCheck);
+  };
+
+  const handleSpCharCheck = (e) => {
+    setSpCharCheck(!spCharCheck);
+  };
+
+  function copyText(stringToBeCopied) {
+    navigator.clipboard.writeText(stringToBeCopied)
+  }
 
   return (
     <>
@@ -55,7 +84,11 @@ const AccountDetails = ({ details }) => {
               <Col>
                 <Form.Group className="mb-3">
                   <Form.Label>App Name</Form.Label>
-                  <Form.Control defaultValue={details.data} type="appName" required={true} />
+                  <Form.Control
+                    defaultValue={details.data}
+                    type="appName"
+                    required={true}
+                  />
                 </Form.Group>
               </Col>
               <Col>
@@ -70,17 +103,28 @@ const AccountDetails = ({ details }) => {
               <Col>
                 <Form.Group className="mb-3" controlId="formBasicEmail">
                   <Form.Label>Email </Form.Label>
-                  <Form.Control defaultValue={value.email} type="email" required={true} />
+                  <Form.Control
+                    defaultValue={value.email}
+                    type="email"
+                    required={true}
+                  />
                 </Form.Group>
               </Col>
               <Col>
-              <Form.Label>Password</Form.Label>
+                <Form.Label>Password</Form.Label>
                 <InputGroup className="mb-3">
-                  <Form.Control defaultValue={value.password} type={pwShow ? "text" : "password"} placeholder="Password" />
+                  <Form.Control
+                    defaultValue={value.password}
+                    type={pwShow ? "text" : "password"}
+                    placeholder="Password"
+                  />
                   <Button variant="outline-secondary" id="button-addon2">
-                  {(!pwShow && <IoMdEye onClick={handlePwShow}/>)}
-                  {(pwShow && <IoMdEyeOff onClick={handlePwShow}/>)}
-                      </Button>
+                    {!pwShow && <IoMdEye onClick={handlePwShow} />}
+                    {pwShow && <IoMdEyeOff onClick={handlePwShow} />}
+                  </Button>
+                  <Button variant="outline-secondary" id="button-addon2" onClick={(e) => {copyText(value.password)}}>
+                    <IoMdCopy />
+                  </Button>
                 </InputGroup>
               </Col>
             </Row>
@@ -95,12 +139,29 @@ const AccountDetails = ({ details }) => {
                         type="text"
                         aria-describedby="basic-addon2"
                         id={"randomPassword"}
+                        defaultValue={randomPw}
                       />
-                      <Button variant="outline-secondary" id="button-addon2">
-                        Generate
+                      <Button variant="outline-secondary" id="button-addon2" onClick={handlePwGenerate}>
+                        <IoMdRefresh />
                       </Button>
+                      <Button variant="outline-secondary" id="button-addon2" onClick={(e) => {copyText(randomPw)}}>
+                    <IoMdCopy />
+                  </Button>
                     </InputGroup>
                   </div>
+                </Row>
+                <Row>
+                  <Col></Col>
+                  <Col>
+                    {/* <Button
+                      variant="outline-primary"
+                      id="button-addon2"
+                      onClick={handlePwGenerate}
+                    >
+                      Generate
+                    </Button> */}
+                  </Col>
+                  <Col></Col>
                 </Row>
               </Col>
               <Col>
@@ -111,7 +172,8 @@ const AccountDetails = ({ details }) => {
                       <Form.Check
                         type="checkbox"
                         label="0-9"
-                        defaultChecked={"checked"}
+                        defaultChecked={numCheck}
+                        onChange={handleNumCheck}
                       />
                     </Form.Group>
                   </Col>
@@ -121,6 +183,7 @@ const AccountDetails = ({ details }) => {
                         type="checkbox"
                         label="a-z"
                         defaultChecked={"checked"}
+                        onChange={handleLowerCheck}
                       />
                     </Form.Group>
                   </Col>
@@ -130,12 +193,17 @@ const AccountDetails = ({ details }) => {
                         type="checkbox"
                         label="A-Z"
                         defaultChecked={"checked"}
+                        onChange={handleUpperCheck}
                       />
                     </Form.Group>
                   </Col>
                   <Col>
                     <Form.Group className="mb-3" controlId="checkSpecialChar">
-                      <Form.Check type="checkbox" label="!@#$%^&*" />
+                      <Form.Check
+                        type="checkbox"
+                        label="!@#$%^&*"
+                        onChange={handleSpCharCheck}
+                      />
                     </Form.Group>
                   </Col>
                 </Row>
@@ -154,10 +222,6 @@ const AccountDetails = ({ details }) => {
                 </Row>
               </Col>
             </Row>
-
-            <Button variant="primary" type="submmit">
-              Submit
-            </Button>
           </Form>
         </Modal.Body>
         <Modal.Footer>
