@@ -14,8 +14,8 @@ const AccountDetails = ({ details }) => {
   const handleShow = () => {
     setShow(true);
     setValue(a1Details[0]);
-    setRandomPw("")
-    setPwShow(false)
+    setRandomPw("");
+    setPwShow(false);
   };
 
   const [sliderValue, setSliderValue] = useState(16);
@@ -35,7 +35,7 @@ const AccountDetails = ({ details }) => {
   const [upperCheck, setUpperCheck] = useState(true);
   const [lowerCheck, setLowerCheck] = useState(true);
   const [spCharCheck, setSpCharCheck] = useState(false);
-  const [randomPw, setRandomPw] = useState("")
+  const [randomPw, setRandomPw] = useState("");
 
   const handlePwGenerate = (e) => {
     e.preventDefault();
@@ -46,28 +46,11 @@ const AccountDetails = ({ details }) => {
       numCheck,
       spCharCheck
     );
-    setRandomPw(pw)
-    console.log(randomPw)
-  };
-
-  const handleNumCheck = (e) => {
-    setNumCheck(!numCheck);
-  };
-
-  const handleUpperCheck = (e) => {
-    setUpperCheck(!upperCheck);
-  };
-
-  const handleLowerCheck = (e) => {
-    setLowerCheck(!lowerCheck);
-  };
-
-  const handleSpCharCheck = (e) => {
-    setSpCharCheck(!spCharCheck);
+    setRandomPw(pw);
   };
 
   function copyText(stringToBeCopied) {
-    navigator.clipboard.writeText(stringToBeCopied)
+    navigator.clipboard.writeText(stringToBeCopied);
   }
 
   return (
@@ -125,7 +108,13 @@ const AccountDetails = ({ details }) => {
                     {!pwShow && <IoMdEye onClick={handlePwShow} />}
                     {pwShow && <IoMdEyeOff onClick={handlePwShow} />}
                   </Button>
-                  <Button variant="outline-secondary" id="button-addon2" onClick={(e) => {copyText(value.password)}}>
+                  <Button
+                    variant="outline-secondary"
+                    id="button-addon2"
+                    onClick={(e) => {
+                      copyText(value.password);
+                    }}
+                  >
                     <IoMdCopy />
                   </Button>
                 </InputGroup>
@@ -144,26 +133,28 @@ const AccountDetails = ({ details }) => {
                         id={"randomPassword"}
                         defaultValue={randomPw}
                       />
-                      <Button variant="outline-secondary" id="button-addon2" onClick={handlePwGenerate}>
+                      <Button
+                        variant="outline-secondary"
+                        id="button-addon2"
+                        onClick={handlePwGenerate}
+                      >
                         <IoMdRefresh />
                       </Button>
-                      <Button variant="outline-secondary" id="button-addon2" onClick={(e) => {copyText(randomPw)}}>
-                    <IoMdCopy />
-                  </Button>
+                      <Button
+                        variant="outline-secondary"
+                        id="button-addon2"
+                        onClick={(e) => {
+                          copyText(randomPw);
+                        }}
+                      >
+                        <IoMdCopy />
+                      </Button>
                     </InputGroup>
                   </div>
                 </Row>
                 <Row>
                   <Col></Col>
-                  <Col>
-                    {/* <Button
-                      variant="outline-primary"
-                      id="button-addon2"
-                      onClick={handlePwGenerate}
-                    >
-                      Generate
-                    </Button> */}
-                  </Col>
+                  <Col></Col>
                   <Col></Col>
                 </Row>
               </Col>
@@ -176,7 +167,9 @@ const AccountDetails = ({ details }) => {
                         type="checkbox"
                         label="0-9"
                         defaultChecked={numCheck}
-                        onChange={handleNumCheck}
+                        onChange={(e) => {
+                          setNumCheck(!numCheck);
+                        }}
                       />
                     </Form.Group>
                   </Col>
@@ -185,8 +178,10 @@ const AccountDetails = ({ details }) => {
                       <Form.Check
                         type="checkbox"
                         label="a-z"
-                        defaultChecked={"checked"}
-                        onChange={handleLowerCheck}
+                        defaultChecked={lowerCheck}
+                        onChange={(e) => {
+                          setLowerCheck(!lowerCheck);
+                        }}
                       />
                     </Form.Group>
                   </Col>
@@ -195,8 +190,10 @@ const AccountDetails = ({ details }) => {
                       <Form.Check
                         type="checkbox"
                         label="A-Z"
-                        defaultChecked={"checked"}
-                        onChange={handleUpperCheck}
+                        defaultChecked={upperCheck}
+                        onChange={(e) => {
+                          setUpperCheck(!upperCheck);
+                        }}
                       />
                     </Form.Group>
                   </Col>
@@ -205,7 +202,9 @@ const AccountDetails = ({ details }) => {
                       <Form.Check
                         type="checkbox"
                         label="!@#$%^&*"
-                        onChange={handleSpCharCheck}
+                        onChange={(e) => {
+                          setSpCharCheck(!spCharCheck);
+                        }}
                       />
                     </Form.Group>
                   </Col>
