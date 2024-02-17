@@ -1,4 +1,5 @@
-import { auth, ui, uiConfig } from "./firebase.js";
+import { auth, ui, uiConfig, actionCodeSettings } from "./firebase.js";
+import { setPersistence, browserSessionPersistence, RecaptchaVerifier} from "firebase/auth";
 import { useEffect, useState } from "react";
 
 /**
@@ -19,16 +20,32 @@ export const signOutEvent = (e) => {
  */
 export function useAuth(home = false) {
   const [isSignIn, setSignIn] = useState(false);
+  const [hasMfa, setHasMfa] = useState(false);
 
   function checkUserSignedIn(user) {
     if (user) {
       console.log(`Signed in as: ${user.displayName} (${user.email})`);
-
       setSignIn(true);
+      // if (user.emailVerigied === false) {
+      //   console.log("not verified")
+      //   auth.currentUser.sendEmailVerification(actionCodeSettings)
+      //   .then(function() {
+      //     // Verification email sent.
+      //     console.log("sent")
+      //   })
+      //   .catch(function(error) {
+      //     // Error occurred. Inspect error.code.
+      //     console.log("not sent")
+      //   });
+      // }
+      if (user.multiFactor.enrolledFactors.length > 0) {
+          setHasMfa(true)
+      }
     } else {
       console.log("Logged out");
       if (home) {
         ui.start("#firebaseui-auth-container", uiConfig);
+        
       }
       setSignIn(false);
     }
@@ -42,5 +59,20 @@ export function useAuth(home = false) {
     return () => unsubscribe();
   }, []);
 
-  return { auth, isSignIn };
+  return { auth, isSignIn, hasMfa };
 }
+
+export const handleRecaptcha = (e) => {
+  e.preventDefault()
+  if (!window.recaptchaVerifier){
+    window.recaptchaVerifier = new RecaptchaVerifier(auth,"rcc", {
+      "size": "invisible"
+    });
+    window.recaptchaVerifier.render()
+    .then(function (widgetId) {
+      window.recaptchaWidgetId = widgetId
+    })
+  }
+}
+
+

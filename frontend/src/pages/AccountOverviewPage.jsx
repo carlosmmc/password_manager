@@ -8,7 +8,7 @@ import { Col, Row, Button } from "react-bootstrap";
 const AccountOverviewPage = () => {
   const navigate = useNavigate();
 
-  const { auth, isSignIn } = useAuth();
+  const { auth, isSignIn, hasMfa } = useAuth();
   setPersistence(auth, browserSessionPersistence)
   .catch((error) => {
     console.error(error)
@@ -35,7 +35,7 @@ const AccountOverviewPage = () => {
         </Col>
         <Col xs={6}></Col>
         <Col>
-          {isSignIn && (
+          {isSignIn && hasMfa && (
             <Button
               type="button"
               style={{ position: "relative", top: 2 + "vh" }}
@@ -48,10 +48,10 @@ const AccountOverviewPage = () => {
         </Col>
       </Row>
       <Row>
-{isSignIn && <AccountList accounts={apps} />}
+{isSignIn && hasMfa && <AccountList accounts={apps} />}
       </Row>
 
-      {!isSignIn && (
+      {!isSignIn || !hasMfa && (
         <>
           <h4>Please sign in</h4>
           <Button
@@ -60,10 +60,10 @@ const AccountOverviewPage = () => {
             className="btn btn-secondary"
             onClick={(e) => {
               e.preventDefault();
-              navigate("/");
+              hasMfa? navigate("/") : navigate("/mfa")
             }}
           >
-            Back to Sign In Page
+            {hasMfa ? "Back to Sign In Page" : "Create MFA"}
           </Button>
         </>
       )}
