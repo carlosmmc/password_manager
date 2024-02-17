@@ -56,9 +56,8 @@ const AccountOverviewPage = () => {
           <h4>Please sign in</h4>
           <Button
             style={{ position: "static", bottom: 30 + "px" }}
-            className="align-self-md-center"
             type="button"
-            class="btn btn-secondary"
+            className="btn btn-secondary"
             onClick={(e) => {
               e.preventDefault();
               navigate("/");

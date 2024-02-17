@@ -6,10 +6,17 @@ This project was bootstrapped with [Create React App](https://github.com/faceboo
 * Make sure you have a `.env` file in the `./frontend` folder that has the keys for:
     * Firebase
 * In your `.env` file, all the keys name start with **`REACT_APP_`**.
-    * Example
-        ```bash
-        REACT_APP_FIREBASE_API_KEY="YOURAPIKEY"
-        ```
+* An example is included below
+
+```
+# firebase keys
+REACT_APP_FIREBASE_API_KEY="***"
+REACT_APP_FIREBASE_AUTH_DOMAIN="***"
+REACT_APP_FIREBASE_PROJECT_ID="***"
+REACT_APP_FIREBASE_STORAGE_BUCKET="***"
+REACT_APP_FIREBASE_MESSAGING_SENDER_ID="***"
+REACT_APP_FIREBASE_APP_ID="***"
+```
 
 ## Available Scripts
 
