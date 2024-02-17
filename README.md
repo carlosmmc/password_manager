@@ -35,3 +35,4 @@ We wrote lots of docs to explain different aspects of the applicaiton. You can f
 * [Frontend readme](/docs/frontend_readme.md) - README file for the frontend of the application.
 * [Backend readme](/docs/backend_readme.md) - README file for the backend of the application.
 * [Project structure](/docs/project_structure.md) - Details how the projects code is structured.
+* [Project observability](/docs/observability.md) - Details how we gain observability into the performance of our application.
