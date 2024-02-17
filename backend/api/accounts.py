@@ -35,8 +35,9 @@ def create_account():
         return (
             jsonify(
                 {
-                    "id": created[1],
+                    "id": created[1][0],
                     "self": f"{base_url}/api/v1/accounts/{created[1]}",
+                    "kid": created[1][1],
                 }
             ),
             StatusCode.CREATED.value,
@@ -58,12 +59,13 @@ def get_account():
                 {
                     "id": found[1]["id"],
                     "self": f"{base_url}/api/v1/accounts/{found[1]['id']}",
+                    "kid": found[1]["kid"],
                     "public_key": found[1]["public_key"],
                     "private_key": found[1]["private_key"],
                     "account_key": found[1]["account_key"],
                 }
             ),
-            StatusCode.CREATED.value,
+            StatusCode.OK.value,
         )
     else:
         return (jsonify(found[1]), StatusCode.NOT_FOUND.value)

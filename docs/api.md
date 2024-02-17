@@ -52,6 +52,7 @@ _Status: 201 Created_
 ```JSON
 {
   "id": "1234",
+  "kid" : "cd9c1afd-c202-4424-9ca3-32a7a26c943d",
   "self": "http://localhost:8080/api/v1/accounts/1234"
 }
 ```
@@ -100,6 +101,7 @@ _Status: 200 OK_
 {
   "id": "1234",
   "self": "http://localhost:8080/api/v1/accounts/1234",
+  "kid" : "cd9c1afd-c202-4424-9ca3-32a7a26c943d",
   "public_key": "{}",
   "private_key": "abc",
   "account_key": "def"
@@ -207,6 +209,7 @@ GET /api/v1/accounts/:account_id/items
 | Outcome | Status Code        | Notes                                 |
 | ------- | ------------------ | ------------------------------------- |
 | Success | 200 OK             |                                       |
+| Failure | 404 Not Found      |                                       |
 | Failure | 401 Unauthorized   | No auth token or bad auth token       |
 | Failure | 406 Not Acceptable | "Accept" header does not include JSON |
 
@@ -243,23 +246,23 @@ _Status: 406 Not Acceptable_
 
 ## Get a Set of Credentials
 
-GET /api/v1/accounts/:account_id/credentials/:credential_id
+GET /api/v1/accounts/:account_id/items/:item_id
 
-### Request to GET /api/v1/accounts/:account_id/credentials/:credential_id
+### Request to GET /api/v1/accounts/:account_id/items/:item_id
 
 **Path Parameters**
 
-| Name          | Description           |
-| ------------- | --------------------- |
-| account_id    | The user's account ID |
-| credential_id | The credential's ID   |
+| Name       | Description           |
+| ---------- | --------------------- |
+| account_id | The user's account ID |
+| item_id    | The credential's ID   |
 
 **Request Body Required?** No  
 **Request Body Format** N/A  
 **Request Attributes** N/A  
 **Request Example** N/A
 
-### Response to GET /api/v1/accounts/:account_id/credentials/:credential_id
+### Response to GET /api/v1/accounts/:account_id/items/:item_id
 
 **Response Body Format** JSON
 
@@ -268,6 +271,7 @@ GET /api/v1/accounts/:account_id/credentials/:credential_id
 | Outcome | Status Code        | Notes                                 |
 | ------- | ------------------ | ------------------------------------- |
 | Success | 200 OK             |                                       |
+| Failure | 404 Not Found      |                                       |
 | Failure | 401 Unauthorized   | No auth token or bad auth token       |
 | Failure | 406 Not Acceptable | "Accept" header does not include JSON |
 
@@ -293,28 +297,29 @@ _Status: 406 Not Acceptable_
 
 ## Edit a Set of Credentials
 
-PUT /api/v1/accounts/:account_id/items/:credential_id
+PUT /api/v1/accounts/:account_id/items/:item_id
 
-### Request to PUT /api/v1/accounts/:account_id/items/:credential_id
+### Request to PUT /api/v1/accounts/:account_id/items/:item_id
 
 **Path Parameters**
 
-| Name          | Description           |
-| ------------- | --------------------- |
-| account_id    | The user's account ID |
-| credential_id | The credential's ID   |
+| Name       | Description           |
+| ---------- | --------------------- |
+| account_id | The user's account ID |
+| item_id    | The credential's ID   |
 
 **Request Body Required?** Yes  
 **Request Body Format** JSON
 
 **Request Attributes**
 
-| Name | Description                                    | Type   | Required? |
-| ---- | ---------------------------------------------- | ------ | --------- |
-| kid  | The ID of the key used to encrypt the data     | String | Yes       |
-| enc  | The encryption algorithm                       | String | Yes       |
-| cty  | Content type of the key. Should always be JWK. | String | Yes       |
-| data | Encrypted credential info                      | String | Yes       |
+| Name     | Description                                    | Type   | Required? |
+| -------- | ---------------------------------------------- | ------ | --------- |
+| kid      | The ID of the key used to encrypt the data     | String | Yes       |
+| enc      | The encryption algorithm                       | String | Yes       |
+| cty      | Content type of the key. Should always be JWK. | String | Yes       |
+| overview | Encrypted credential overview                  | String | Yes       |
+| details  | Encrypted credential details                   | String | Yes       |
 
 **Request Example**
 
@@ -324,7 +329,8 @@ PUT /api/v1/accounts/:account_id/items/:credential_id
   "kid": "867fghjkl",
   "enc": "A256GCM",
   "cty": "b5+jwk+json",
-  "data": "rdfthyukjlA4nmajhgf"
+  "overview": "rdfthyukjlA4nmajhgf",
+  "details": "wertyuiol23456yujnm"
 }
 ```
 
@@ -334,14 +340,12 @@ PUT /api/v1/accounts/:account_id/items/:credential_id
 
 **Response Statuses**
 
-| Outcome | Status Code        | Notes                                 |
-| ------- | ------------------ | ------------------------------------- |
-| Success | 200 OK             |                                       |
-| Failure | 400 Bad Request    | Missing email or has extra attributes |
-| Failure | 401 Unauthorized   | No auth token or bad auth token       |
-| Failure | 406 Not Acceptable | "Accept" header does not include JSON |
-
-**Response Examples**
+| Outcome | Status Code        | Notes                                      |
+| ------- | ------------------ | ------------------------------------------ |
+| Success | 200 OK             |                                            |
+| Failure | 400 Bad Request    | Missing attributes or has extra attributes |
+| Failure | 401 Unauthorized   | No auth token or bad auth token            |
+| Failure | 406 Not Acceptable | "Accept" header does not include JSON      |
 
 **Response Examples**
 
@@ -364,32 +368,32 @@ _Status: 400 Bad Request_
 
 ## Delete a Set of Credentials
 
-DELETE /api/v1/accounts/:account_id/items/:credential_id
+DELETE /api/v1/accounts/:account_id/items/:item_id
 
-### Request to DELETE /api/v1/accounts/:account_id/items/:credential_id
+### Request to DELETE /api/v1/accounts/:account_id/items/:item_id
 
 **Path Parameters**
 
-| Name          | Description           |
-| ------------- | --------------------- |
-| account_id    | The user's account ID |
-| credential_id | The credential's ID   |
+| Name       | Description           |
+| ---------- | --------------------- |
+| account_id | The user's account ID |
+| item_id    | The credential's ID   |
 
 **Request Body Required?** No  
 **Request Body Format** N/A  
 **Request Attributes** N/A  
 **Request Example** N/A
 
-### Response to DELETE /api/v1/accounts/:account_id/items/:credential_id
+### Response to DELETE /api/v1/accounts/:account_id/items/:item_id
 
 **Response Body Format** JSON
 
 **Response Statuses**
 
-| Outcome | Status Code    | Notes                                  |
-| ------- | -------------- | -------------------------------------- |
-| Success | 204 No Content |                                        |
-| Failure | 404 Not Found  | No credentials with that credential_id |
+| Outcome | Status Code    | Notes                      |
+| ------- | -------------- | -------------------------- |
+| Success | 204 No Content |                            |
+| Failure | 404 Not Found  | No items with that item_id |
 
 **Response Examples**
 

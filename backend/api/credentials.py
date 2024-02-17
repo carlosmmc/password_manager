@@ -1,4 +1,6 @@
+from json import dumps
 from flask import Blueprint, request, jsonify
+from db import cloud_sql
 from .helpers import (
     Param,
     are_parameters_valid,
@@ -13,119 +15,115 @@ _credential_modify_params = [
     Param("kid", str),
     Param("enc", str),
     Param("cty", str),
-    Param("data", str),
+    Param("overview", str),
+    Param("details", str),
 ]
 
 
-@credentials_blueprint.route(f"{BASE_PATH}/<int:account_id>/items", methods=["POST"])
+@credentials_blueprint.route(f"{BASE_PATH}/<account_id>/items", methods=["POST"])
 def create_credential(account_id):
     data = request.get_json()
     base_url = get_base_url(request)
 
-    print(f"account_id is: {account_id}")
-
     validation_result = are_parameters_valid(data, _credential_modify_params)
     if not validation_result.is_valid:
         return (jsonify(validation_result.error_msgs), StatusCode.BAD_REQUEST.value)
 
-    created_id = 8910
-
-    return (
-        jsonify(
-            {
-                "id": created_id,
-                "self": f"{base_url}/api/v1/accounts/{created_id}",
-            }
-        ),
-        StatusCode.CREATED.value,
+    created = cloud_sql.create_item(
+        account_id, data["kid"], data["overview"], data["details"]
     )
 
+    if created[0] is True:
+        return (
+            jsonify(
+                {
+                    "id": created[1],
+                    "self": f"{base_url}/api/v1/accounts/{account_id}/items/{created[1]}",
+                }
+            ),
+            StatusCode.CREATED.value,
+        )
+    else:
+        return (jsonify(created[1]), StatusCode.BAD_REQUEST.value)
 
-@credentials_blueprint.route(f"{BASE_PATH}/<int:account_id>/items", methods=["GET"])
+
+@credentials_blueprint.route(f"{BASE_PATH}/<account_id>/items", methods=["GET"])
 def view_all_credentials(account_id):
     base_url = get_base_url(request)
 
-    print(f"account_id is: {account_id}")
+    found = cloud_sql.find_user_items(account_id)
 
-    return (
-        jsonify(
-            [
-                {
-                    "id": 8910,
-                    "kid": "867fghjkl",
-                    "enc": "A256GCM",
-                    "cty": "b5+jwk+json",
-                    "data": "rdfthyukjlA4nmajhgf",
-                    "self": f"{base_url}/api/v1/accounts/1234/items/8910",
-                },
-                {
-                    "id": 5678,
-                    "kid": "867fghjkl",
-                    "enc": "A256GCM",
-                    "cty": "b5+jwk+json",
-                    "data": "jemccouandsfbfrh7au",
-                    "self": f"{base_url}/api/v1/accounts/1234/items/5678",
-                },
-            ]
-        ),
-        StatusCode.OK.value,
-    )
+    if found[0] is True:
+        items = []
+        for item in found[1]:
+            new_item = dict(item)
+            new_item["self"] = (
+                f"{base_url}/api/v1/accounts/{account_id}/items/{new_item['id']}"
+            )
+            new_item["cty"] = "b5+jwk+json"
+            items.append(new_item)
+        return (
+            jsonify(items),
+            StatusCode.OK.value,
+        )
+    else:
+        return (jsonify(found[1]), StatusCode.NOT_FOUND.value)
 
 
 @credentials_blueprint.route(
-    f"{BASE_PATH}/<int:account_id>/items/<int:credential_id>", methods=["GET"]
+    f"{BASE_PATH}/<account_id>/items/<item_id>", methods=["GET"]
 )
-def view_credential(account_id, credential_id):
-    print(f"account_id is: {account_id}")
-    print(f"credential_id is: {credential_id}")
+def view_credential(account_id, item_id):
 
-    return (
-        jsonify(
-            {
-                "id": 8910,
-                "kid": "867fghjkl",
-                "enc": "A256GCM",
-                "cty": "b5+jwk+json",
-                "data": "rdfthyukjlA4nmajhgf",
-            }
-        ),
-        StatusCode.OK.value,
-    )
+    found = cloud_sql.find_item(account_id, item_id)
+
+    if found[0] is True:
+        new_item = dict(found[1])
+        new_item["cty"] = "b5+jwk+json"
+        return (
+            jsonify(new_item),
+            StatusCode.OK.value,
+        )
+    else:
+        return (jsonify(found[1]), StatusCode.NOT_FOUND.value)
 
 
 @credentials_blueprint.route(
-    f"{BASE_PATH}/<int:account_id>/items/<int:credential_id>", methods=["PUT"]
+    f"{BASE_PATH}/<account_id>/items/<item_id>", methods=["PUT"]
 )
-def edit_credential(account_id, credential_id):
+def edit_credential(account_id, item_id):
     data = request.get_json()
     base_url = get_base_url(request)
-
-    print(f"account_id is: {account_id}")
-    print(f"credential_id is: {credential_id}")
 
     validation_result = are_parameters_valid(data, _credential_modify_params)
     if not validation_result.is_valid:
         return (jsonify(validation_result.error_msgs), StatusCode.BAD_REQUEST.value)
 
-    return (
-        jsonify(
-            {
-                "id": credential_id,
-                "self": f"{base_url}/api/v1/accounts/{credential_id}",
-            }
-        ),
-        StatusCode.OK.value,
+    updated = cloud_sql.update_item(
+        item_id, account_id, data["kid"], data["enc"], data["overview"], data["details"]
     )
+
+    if updated[0] is True:
+        return (
+            jsonify(
+                {
+                    "id": item_id,
+                    "self": f"{base_url}/api/v1/accounts/{account_id}/items/{updated[1]}",
+                }
+            ),
+            StatusCode.OK.value,
+        )
+    else:
+        return (jsonify(updated[1]), StatusCode.BAD_REQUEST.value)
 
 
 @credentials_blueprint.route(
-    f"{BASE_PATH}/<int:account_id>/items/<int:credential_id>", methods=["DELETE"]
+    f"{BASE_PATH}/<account_id>/items/<item_id>", methods=["DELETE"]
 )
-def delete_credential(account_id, credential_id):
-    print(f"account_id is: {account_id}")
-    print(f"credential_id is: {credential_id}")
+def delete_credential(account_id, item_id):
+    deleted = cloud_sql.delete_item(account_id, item_id)
 
-    return (
-        jsonify({"id": credential_id}),
-        StatusCode.OK.value,
-    )
+    if deleted[0] is True:
+        return ({}, StatusCode.NO_CONTENT.value)
+    else:
+        return (jsonify(deleted[1]), StatusCode.NOT_FOUND.value)
