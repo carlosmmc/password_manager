@@ -57,9 +57,7 @@ def view_all_credentials(account_id):
         items = []
         for item in found[1]:
             new_item = dict(item)
-            new_item[
-                "self"
-            ] = f"{base_url}/api/v1/accounts/{account_id}/items/{new_item['id']}"            new_item["cty"] = "b5+jwk+json"
+            new_item["self"] = f"{base_url}/api/v1/accounts/{account_id}/items/{new_item['id']}"            new_item["cty"] = "b5+jwk+json"
             items.append(new_item)
         return (
             jsonify(items),
