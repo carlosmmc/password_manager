@@ -17,8 +17,8 @@ The "Unique?" column indicates whether or not the database will enforce uniquene
 | Property | Type          | Unique? | Notes                                                  |
 | -------- | ------------- | ------- | ------------------------------------------------------ |
 | id       | uuid          | Yes     | Primary Key for this row                               |
-| uid      | uuid          | Yes     | User that owns this item. Foreign Key on Users         |
-| key      | uuid          | Yes     | Key used to decrypt this item. Foreign Key on Key Sets |
+| usid     | uuid          | Yes     | User that owns this item. Foreign Key on Users         |
+| kid      | uuid          | Yes     | Key used to decrypt this item. Foreign Key on Key Sets |
 | overview | varchar(1024) | No      | Encrypted identifying info                             |
 | details  | varchar(1024) | No      | Encrypted item details                                 |
 
@@ -28,6 +28,7 @@ The "Unique?" column indicates whether or not the database will enforce uniquene
 | ----------- | ------------- | ------- | ---------------------------------------------- |
 | id          | uuid          | Yes     | Auto-generated Primary Key for this row        |
 | uid         | uuid          | Yes     | User that owns this key. Foreign Key on Users. |
+| enc         | varchar(50)   | No      | Encryption scheme used for this key set        |
 | public_key  | varchar(1024) | No      | JWK with the unencrypted public key            |
 | private_key | varchar(1024) | No      | Encrypted private key                          |
 | account_key | varchar(1024) | No      | Encrypted key that unlocks the user's data     |
