@@ -2,6 +2,7 @@
 
 CREATE TABLE Keys (
     id UUID PRIMARY KEY,
+    enc varchar(50),
     public_key VARCHAR(1024),
     private_key VARCHAR(1024),
     account_key VARCHAR(1024)

@@ -20,8 +20,8 @@ def get_db_connection():
 connector = Connector()
 
 # variables for local connection
-# u = os.getenv('LOCAL_DB_USER')
-# pw = os.getenv('LOCAL_DB_PW')
+# u = os.getenv("LOCAL_DB_USER")
+# pw = os.getenv("LOCAL_DB_PW")
 
 pool = sqlalchemy.create_engine(
     "postgresql+pg8000://",
@@ -55,7 +55,7 @@ def create_user_account(user_email_address, public_key, private_key, account_key
     :type private_key: str
     :param account_key: The user's encrypted account key
     :type account_key: str
-    :return: (Boolean, str)
+    :return: (Boolean, array)
     :rtype: ParamValidation
     """
     # check if this user exists
@@ -92,8 +92,7 @@ def create_user_account(user_email_address, public_key, private_key, account_key
         ui_query, {"usid": usid, "user_email_address": user_email_address, "kid": kid}
     )
 
-    # return userid[0][0].hex
-    return ParamValidation(True, usid)
+    return ParamValidation(True, [usid, kid])
 
 
 def find_user_account(email):
@@ -106,7 +105,7 @@ def find_user_account(email):
     :rtype: ParamValidation
     """
     # try to find the user
-    us_query = "SELECT CAST(id AS text), kid from Users where email = :email;"
+    us_query = "SELECT CAST(id AS text), kid from Users WHERE email = :email;"
     e_result = execute_query(
         us_query,
         {"email": email},
@@ -115,7 +114,7 @@ def find_user_account(email):
     if e_result == []:
         return ParamValidation(False, {"Error": ["email address not found"]})
 
-    k_query = "SELECT public_key, private_key, account_key from Keys where id = :id;"
+    k_query = "SELECT public_key, private_key, account_key from Keys WHERE id = :id;"
     k_result = execute_query(
         k_query,
         {"id": e_result[0][1]},
@@ -124,6 +123,7 @@ def find_user_account(email):
 
     user_info = {
         "id": e_result[0][0],
+        "kid": e_result[0][1],
         "public_key": k_result[0][0],
         "private_key": k_result[0][1],
         "account_key": k_result[0][2],
@@ -149,3 +149,199 @@ def get_user_passwords(user_email_address, limit=5):
         {"user_id": user_email_address, "limit": limit},
         lambda res: res.fetchall(),
     )
+
+
+def create_item(account_id, kid, overview, details):
+    """
+    Creates a new set of user credentials.
+
+    :param account_id: The user's account id (uuid)
+    :type account_id: str
+    :param kid: The user's key id (uuid)
+    :type kid: str
+    :param overview: The encrypted item overview
+    :type overview: str
+    :param details: The encrypted item details
+    :type details: str
+    :return: (Boolean, str) with str = new item uuid if successful, str= error if not
+    :rtype: ParamValidation
+    """
+    # create the item ID
+    iid = uuid.uuid4().hex
+
+    i_query = "INSERT INTO Items (id, usid, kid, overview, details) VALUES (:iid, :account_id, :kid, :overview, :details);"
+    execute_insert_query(
+        i_query,
+        {
+            "iid": iid,
+            "account_id": account_id,
+            "kid": kid,
+            "overview": overview,
+            "details": details,
+        },
+        lambda res: res.fetchall(),
+    )
+
+    return ParamValidation(True, iid)
+
+
+def find_user_items(account_id):
+    """
+    Finds the items belonging to a user.
+
+    :param account_id: The user's account id
+    :type account_id: str
+    :return: (Boolean, array)
+    :rtype: ParamValidation
+    """
+
+    i_query = "SELECT CAST(Items.id AS text), CAST(Items.kid AS text), Items.overview, Keys.enc FROM Items LEFT OUTER JOIN Keys ON Items.kid = Keys.id WHERE Items.usid = :account_id;"
+    i_result = execute_query(
+        i_query,
+        {"account_id": account_id},
+        lambda res: res.fetchall(),
+    )
+    if i_result == []:
+        return ParamValidation(False, {"Error": ["no items found"]})
+
+    items = []
+
+    for row in i_result:
+        new_item = {
+            "id": row[0],
+            "kid": row[1],
+            "data": row[2],
+            "enc": row[3],
+        }
+        items.append(new_item)
+
+    return ParamValidation(True, items)
+
+
+def find_item(account_id, item_id):
+    """
+    Finds a specific item by item id.
+
+    :param account_id: The user's account id
+    :type account_id: str
+    :param item_id: The item's id
+    :type item_id: str
+    :return: (Boolean, dict)
+    :rtype: ParamValidation
+    """
+    i_query = "SELECT CAST(Items.id AS text), CAST(Items.kid AS text), Items.details, Keys.enc FROM Items LEFT OUTER JOIN Keys ON Items.kid = Keys.id WHERE Items.id = :item_id AND Items.usid = :account_id;"
+    i_result = execute_query(
+        i_query,
+        {"item_id": item_id, "account_id": account_id},
+        lambda res: res.fetchall(),
+    )
+
+    if i_result == []:
+        return ParamValidation(False, {"Error": ["no items found"]})
+
+    item = {
+        "id": i_result[0][0],
+        "kid": i_result[0][1],
+        "data": i_result[0][2],
+        "enc": i_result[0][3],
+    }
+
+    return ParamValidation(True, item)
+
+
+def update_item(item_id, account_id, kid, enc, overview, details):
+    """
+    Updates a set of user credentials.
+
+    :param item_id: The user's account id (uuid)
+    :type item_id: str
+    :param account_id: The user's account id (uuid)
+    :type account_id: str
+    :param kid: The user's key id (uuid)
+    :type kid: str
+    :param enc: The type of encryption used for this item
+    :type enc: str
+    :param overview: The encrypted item overview
+    :type overview: str
+    :param details: The encrypted item details
+    :type details: str
+    :return: (Boolean, str)
+    :rtype: ParamValidation
+    """
+    ks_query = "SELECT id FROM Keys WHERE id = :kid;"
+    ks_result = execute_query(
+        ks_query,
+        {"kid": kid},
+        lambda res: res.fetchall(),
+    )
+
+    if ks_result == []:
+        return ParamValidation(False, {"Error": ["item not found"]})
+
+    is_query = "SELECT id FROM Items WHERE id = :item_id AND usid = :account_id;"
+    is_result = execute_query(
+        is_query,
+        {"item_id": item_id, "account_id": account_id},
+        lambda res: res.fetchall(),
+    )
+
+    if is_result == []:
+        return ParamValidation(False, {"Error": ["item not found"]})
+
+    k_query = "UPDATE Keys SET enc = :enc WHERE id = :kid;"
+    execute_insert_query(
+        k_query,
+        {
+            "kid": kid,
+            "enc": enc,
+        },
+        lambda res: res.fetchall(),
+    )
+
+    i_query = "UPDATE Items SET kid = :kid, overview = :overview, details = :details WHERE id = :item_id AND usid = :account_id;"
+    execute_insert_query(
+        i_query,
+        {
+            "kid": kid,
+            "overview": overview,
+            "details": details,
+            "item_id": item_id,
+            "account_id": account_id,
+        },
+        lambda res: res.fetchall(),
+    )
+
+    return ParamValidation(True, item_id)
+
+
+# delete_item item_id, account_id
+def delete_item(account_id, item_id):
+    """
+    Finds a specific item by item id.
+
+    :param account_id: The user's account id
+    :type account_id: str
+    :param item_id: The item's id
+    :type item_id: str
+    :return: (Boolean, dict)
+    :rtype: ParamValidation
+    """
+    is_query = "SELECT id FROM Items WHERE id = :item_id AND usid = :account_id;"
+    is_result = execute_query(
+        is_query,
+        {"item_id": item_id, "account_id": account_id},
+        lambda res: res.fetchall(),
+    )
+
+    if is_result == []:
+        return ParamValidation(False, {"Error": ["item not found"]})
+
+    # DELETE FROM films WHERE kind <> 'Musical';
+    i_query = "DELETE FROM Items WHERE id = :item_id AND usid = :account_id;"
+    execute_insert_query(
+        i_query,
+        {"item_id": item_id, "account_id": account_id},
+        lambda res: res.fetchall(),
+    )
+
+    return ParamValidation(True, {})
