@@ -36,3 +36,29 @@ We wrote lots of docs to explain different aspects of the applicaiton. You can f
 * [Backend readme](/docs/backend_readme.md) - README file for the backend of the application.
 * [Project structure](/docs/project_structure.md) - Details how the projects code is structured.
 * [Project observability](/docs/observability.md) - Details how we gain observability into the performance of our application.
+
+## Deploys
+Below are succinct instructions on how to run the application locally/push to the production instance.
+
+```bash
+# [OPTIONAL] If you have made changes to frontend, update the build artifact with the following instructions
+# from the project root navigate to the frontend folder
+cd frontend
+
+# generate the build artifact by running the following npm command. make sure your npm environment is up to date
+npm run build
+
+# delete everything currently in the build folder
+rm -rf ../backend/build/*
+
+# copy the generated folder into the backend folder
+cp -r build/* ../backend/build/
+
+# DEPLOY LOCALLY
+cd ../backend
+python main.py
+
+# DEPLOY TO PROD
+cd ../backend
+gcloud app deploy
+```

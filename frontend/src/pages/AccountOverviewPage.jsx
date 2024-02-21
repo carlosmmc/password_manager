@@ -10,14 +10,14 @@ const AccountOverviewPage = () => {
 
   const { auth, isSignIn } = useAuth();
   setPersistence(auth, browserSessionPersistence)
-  .catch((error) => {
-    console.error(error)
-  });
+    .catch((error) => {
+      console.error(error)
+    });
 
   const [apps, setApps] = useState([]);
 
   const loadApps = async () => {
-    const response = await fetch("/api/v1/accounts/1234/items").catch((error) => {
+    const response = await fetch("password-manager-osu.wl.r.appspot.com/api/v1/accounts/a8fc5384-1dbe-4763-b0ab-40bffb02f5a4/items").catch((error) => {
       console.log(error)
     });
     const data = await response.json();
@@ -48,7 +48,7 @@ const AccountOverviewPage = () => {
         </Col>
       </Row>
       <Row>
-{isSignIn && <AccountList accounts={apps} />}
+        {isSignIn && <AccountList accounts={apps} />}
       </Row>
 
       {!isSignIn && (
