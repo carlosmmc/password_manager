@@ -21,7 +21,7 @@ const AccountOverviewPage = () => {
 
   const loadApps = async () => {
     if (isSignedIn && isEmailVerified && hasMfa) {
-      const response = await fetch("/api/v1/accounts/1234/items").catch(
+      const response = await fetch("password-manager-osu.wl.r.appspot.com/api/v1/accounts/a8fc5384-1dbe-4763-b0ab-40bffb02f5a4/items").catch(
         (error) => {
           console.log(error);
         }
