@@ -7,6 +7,11 @@ main {
   margin-top: 2vh;
 }
 
+#auth-block {
+  min-height: 5vh;
+  margin-bottom: 2vh;
+}
+
 .my-modal {
   max-width: 40vw !important;
 }

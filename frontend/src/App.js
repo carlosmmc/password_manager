@@ -5,11 +5,9 @@ import Footer from "./components/Footer.jsx";
 import Header from "./components/Header.jsx";
 import HomePage from "./pages/HomePage.jsx";
 import AccountOverviewPage from "./pages/AccountOverviewPage.jsx";
-import MultiFactorAuthPage from "./pages/MultiFactorAuthPage.jsx";
-
+import SignUpPage from "./pages/SignUpPage.jsx";
 
 function App() {
-
   return (
     <Router>
       <main>
@@ -18,8 +16,7 @@ function App() {
           <Routes>
             <Route path="/" element={<HomePage />} exact />
             <Route path="/account" element={<AccountOverviewPage />} exact />
-            <Route path="/sign-up" element={<AccountOverviewPage />} exact />
-            <Route path="/mfa" element={<MultiFactorAuthPage />} exact />
+            <Route path="/sign-up" element={<SignUpPage />} exact />
           </Routes>
         </Container>
       </main>

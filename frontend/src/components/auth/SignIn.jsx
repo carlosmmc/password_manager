@@ -4,12 +4,23 @@ import {
   getAuth,
   signInWithEmailAndPassword,
   getMultiFactorResolver,
+  createUserWithEmailAndPassword,
+  updateProfile,
+  sendEmailVerification,
+  PhoneMultiFactorGenerator,
+  PhoneAuthProvider,
 } from "firebase/auth";
-import { auth } from "../firebase";
+import { auth } from "../../firebase.js";
+import { handleRecaptcha } from "../../helpers/helpers.js";
+import SendTextMFA from "./SendTextMFA.jsx";
+import { resolvePath } from "react-router-dom";
 
-const SignIn = () => {
+const SignIn = ({ auth }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [verificationId, setVerificationId] = useState("");
+  const [mfaTextSent, setMfaTextSent] = useState(false);
+  const [mfaResolver, setMfaResolver] = useState();
 
   const handleEmailInput = (e) => {
     setEmail(e.target.value);
@@ -19,10 +30,9 @@ const SignIn = () => {
     setPassword(e.target.value);
   };
 
-  console.log(auth.currentUser);
-
   const handleSignIn = (e) => {
-    e.preventDefault()
+    e.preventDefault();
+    handleRecaptcha(e);
     signInWithEmailAndPassword(auth, email, password)
       .then((userCredential) => {
         // Signed up
@@ -35,34 +45,29 @@ const SignIn = () => {
           const resolver = getMultiFactorResolver(auth, error);
           // Ask user which second factor to use.
           console.log(resolver);
-          // if (resolver.hints[selectedIndex].factorId ===
-          //     PhoneMultiFactorGenerator.FACTOR_ID) {
-          //     const phoneInfoOptions = {
-          //         multiFactorHint: resolver.hints[selectedIndex],
-          //         session: resolver.session
-          //     };
-          //     const phoneAuthProvider = new PhoneAuthProvider(auth);
-          //     // Send SMS verification code
-          //     return phoneAuthProvider.verifyPhoneNumber(phoneInfoOptions, recaptchaVerifier)
-          //         .then(function (verificationId) {
-          //             // Ask user for the SMS verification code. Then:
-          //             const cred = PhoneAuthProvider.credential(
-          //                 verificationId, verificationCode);
-          //             const multiFactorAssertion =
-          //                 PhoneMultiFactorGenerator.assertion(cred);
-          //             // Complete sign-in.
-          //             return resolver.resolveSignIn(multiFactorAssertion)
-          //         })
-          //         .then(function (userCredential) {
-          //             // User successfully signed in with the second factor phone number.
-          //         });
-          // } else if (resolver.hints[selectedIndex].factorId ===
-          //            TotpMultiFactorGenerator.FACTOR_ID) {
-          //     // Handle TOTP MFA.
-          //     // ...
-          // } else {
-          //     // Unsupported second factor.
-          // }
+          if (
+            resolver.hints[0].factorId === PhoneMultiFactorGenerator.FACTOR_ID
+          ) {
+            const phoneInfoOptions = {
+              multiFactorHint: resolver.hints[0],
+              session: resolver.session,
+            };
+            const phoneAuthProvider = new PhoneAuthProvider(auth);
+            const recaptchaVerifier = window.recaptchaVerifier;
+            // Send SMS verification code
+            return phoneAuthProvider
+              .verifyPhoneNumber(phoneInfoOptions, recaptchaVerifier)
+              .then(function (verificationId) {
+                setVerificationId(verificationId);
+                setMfaResolver(resolver);
+                setMfaTextSent(true);
+              })
+              .then(function (userCredential) {
+                // User successfully signed in with the second factor phone number.
+              });
+          } else {
+            // Unsupported second factor.
+          }
         } else if (error.code == "auth/wrong-password") {
           // Handle other errors such as wrong password.
         }
@@ -76,7 +81,8 @@ const SignIn = () => {
         <Form.Group className="mb-3" controlId="formBasicEmail">
           <Form.Label>Email address</Form.Label>
           <Form.Control
-            type="email"
+          autoComplete={"username"}
+            type={"email"}
             placeholder="Enter email"
             onChange={handleEmailInput}
           />
@@ -85,7 +91,8 @@ const SignIn = () => {
         <Form.Group className="mb-3" controlId="formBasicPassword">
           <Form.Label>Master Password</Form.Label>
           <Form.Control
-            type="password"
+          autoComplete={"password"}
+            type={"password"}
             placeholder="Enter password"
             onChange={handlePasswordInput}
           />
@@ -94,10 +101,14 @@ const SignIn = () => {
           <Button variant="primary" onClick={handleSignIn}>
             Log in
           </Button>
-          <Button variant="success" href="/register">
-            Register
-          </Button>
-          <Button variant="success">Register with Google</Button>
+          {mfaTextSent && (
+            <>
+              <SendTextMFA
+                verificationId={verificationId}
+                resolver={mfaResolver}
+              />
+            </>
+          )}
         </Stack>
       </Form>
     </>
