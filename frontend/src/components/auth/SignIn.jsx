@@ -1,19 +1,13 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState } from "react";
 import { Button, Form, Stack } from "react-bootstrap";
 import {
-  getAuth,
   signInWithEmailAndPassword,
   getMultiFactorResolver,
-  createUserWithEmailAndPassword,
-  updateProfile,
-  sendEmailVerification,
   PhoneMultiFactorGenerator,
   PhoneAuthProvider,
 } from "firebase/auth";
-import { auth } from "../../firebase.js";
 import { handleRecaptcha } from "../../helpers/helpers.js";
 import SendTextMFA from "./SendTextMFA.jsx";
-import { resolvePath } from "react-router-dom";
 
 const SignIn = ({ auth }) => {
   const [email, setEmail] = useState("");
@@ -21,6 +15,7 @@ const SignIn = ({ auth }) => {
   const [verificationId, setVerificationId] = useState("");
   const [mfaTextSent, setMfaTextSent] = useState(false);
   const [mfaResolver, setMfaResolver] = useState();
+  const [errorShow, setErrorShow] = useState(false);
 
   const handleEmailInput = (e) => {
     setEmail(e.target.value);
@@ -36,15 +31,12 @@ const SignIn = ({ auth }) => {
     signInWithEmailAndPassword(auth, email, password)
       .then((userCredential) => {
         // Signed up
-        const user = userCredential.user;
-        console.log(user);
         // ...
       })
       .catch(function (error) {
-        if (error.code == "auth/multi-factor-auth-required") {
+        if (error.code === "auth/multi-factor-auth-required") {
           const resolver = getMultiFactorResolver(auth, error);
           // Ask user which second factor to use.
-          console.log(resolver);
           if (
             resolver.hints[0].factorId === PhoneMultiFactorGenerator.FACTOR_ID
           ) {
@@ -66,10 +58,10 @@ const SignIn = ({ auth }) => {
                 // User successfully signed in with the second factor phone number.
               });
           } else {
-            // Unsupported second factor.
+            setErrorShow("Unsupported MFA method.");
           }
-        } else if (error.code == "auth/wrong-password") {
-          // Handle other errors such as wrong password.
+        } else {
+          setErrorShow("You entered wrong email or password.");
         }
       });
   };
@@ -81,7 +73,7 @@ const SignIn = ({ auth }) => {
         <Form.Group className="mb-3" controlId="formBasicEmail">
           <Form.Label>Email address</Form.Label>
           <Form.Control
-          autoComplete={"username"}
+            autoComplete={"username"}
             type={"email"}
             placeholder="Enter email"
             onChange={handleEmailInput}
@@ -91,24 +83,29 @@ const SignIn = ({ auth }) => {
         <Form.Group className="mb-3" controlId="formBasicPassword">
           <Form.Label>Master Password</Form.Label>
           <Form.Control
-          autoComplete={"password"}
+            autoComplete={"password"}
             type={"password"}
             placeholder="Enter password"
             onChange={handlePasswordInput}
           />
         </Form.Group>
+        {mfaTextSent && (
+          <>
+            <SendTextMFA
+              verificationId={verificationId}
+              resolver={mfaResolver}
+            />
+          </>
+        )}
+        {errorShow && <div id="warning">{errorShow}</div>}
         <Stack direction="horizontal" gap={5}>
-          <Button variant="primary" onClick={handleSignIn}>
+          <Button
+            id="signin-signup-button"
+            variant="primary"
+            onClick={handleSignIn}
+          >
             Log in
           </Button>
-          {mfaTextSent && (
-            <>
-              <SendTextMFA
-                verificationId={verificationId}
-                resolver={mfaResolver}
-              />
-            </>
-          )}
         </Stack>
       </Form>
     </>

@@ -1,9 +1,6 @@
-import { auth, ui, uiConfig, actionCodeSettings } from "../firebase.js";
+import { auth} from "../firebase.js";
 import {
-  setPersistence,
-  browserSessionPersistence,
   RecaptchaVerifier,
-  sendEmailVerification,
 } from "firebase/auth";
 import { useEffect, useState } from "react";
 
@@ -14,7 +11,6 @@ import { useEffect, useState } from "react";
 export const signOutEvent = (e) => {
   e.preventDefault();
   auth.signOut().then(() => {
-    console.log("logged out!");
   });
 };
 
@@ -38,7 +34,6 @@ export function useAuth() {
         setIsEmailVerified(true);
       }
     } else {
-      console.log("Logged out");
       setAuthState({isSignedIn: false, pending: false, user:null});
     }
   }
@@ -69,15 +64,13 @@ export const handleRecaptcha = (e) => {
 export const handleEmailVerification = (e) => {
   e.preventDefault();
   const actionCodeSettings = {
-    url: "http://localhost:3000/",
+    url: "/",
     handleCodeInApp: true,
   };
   auth.currentUser
     .sendEmailVerification(actionCodeSettings)
     .then(function () {
       // Verification email sent.
-      window.alert("Email sent")
-      console.log("sent");
     })
     .catch(function (error) {
       // Error occurred. Inspect error.code.

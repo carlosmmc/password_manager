@@ -12,6 +12,21 @@ main {
   margin-bottom: 2vh;
 }
 
+#signin-signup-button {
+  margin-bottom: 2vh;
+  margin-top: 2vh;
+  margin-right: 2vh;
+  margin-left: 2vh;
+}
+
+.mb-3 {
+  width: 50% !important;
+}
+
+#warning {
+  color: crimson;
+}
+
 .my-modal {
   max-width: 40vw !important;
 }

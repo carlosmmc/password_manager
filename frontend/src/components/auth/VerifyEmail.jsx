@@ -3,7 +3,6 @@ import { handleEmailVerification } from "../../helpers/helpers.js";
 import { Button } from "react-bootstrap";
 
 const VerifyEmail = ({ email }) => {
-  function maskEmail(email) {}
   return (
     <>
     <div id="auth-block"> 

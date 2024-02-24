@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React from "react";
 import { useNavigate } from "react-router-dom";
 import { setPersistence, browserSessionPersistence } from "firebase/auth";
 import AccountList from "../components/AccountList.jsx";
@@ -6,39 +6,23 @@ import { signOutEvent, useAuth } from "../helpers/helpers.js";
 import { Col, Row, Button } from "react-bootstrap";
 import VerifyEmail from "../components/auth/VerifyEmail.jsx";
 import Loader from "../components/shared/Loader.jsx";
+import AddCred from "../components/AddCred.jsx";
 
 const AccountOverviewPage = () => {
   const navigate = useNavigate();
 
-  const { auth, isSignedIn, pending, user, hasMfa, isEmailVerified } = useAuth();
+  const { auth, isSignedIn, pending, hasMfa, isEmailVerified } = useAuth();
   setPersistence(auth, browserSessionPersistence).catch((error) => {
     console.error(error);
   });
 
-  
-
-  const [apps, setApps] = useState([]);
-
-  const loadApps = async () => {
-    if (isSignedIn && isEmailVerified && hasMfa) {
-      const response = await fetch("password-manager-osu.wl.r.appspot.com/api/v1/accounts/a8fc5384-1dbe-4763-b0ab-40bffb02f5a4/items").catch(
-        (error) => {
-          console.log(error);
-        }
-      );
-      const data = await response.json();
-      setApps(data);
-    } else {
-      return null;
-    }
-  };
-  useEffect(() => {
-    loadApps();
-  }, []);
 
   if (pending) {
-    return (<><Loader /></>)
-
+    return (
+      <>
+        <Loader />
+      </>
+    );
   }
 
   return (
@@ -50,33 +34,29 @@ const AccountOverviewPage = () => {
         <Col xs={6}></Col>
         <Col>
           {isSignedIn && hasMfa && (
-            <Button
-              type="button"
-              style={{ position: "relative", top: 2 + "vh" }}
-              className="btn btn-secondary"
-              onClick={signOutEvent}
-            >
-              Sign out
-            </Button>
+            <div>
+              <AddCred />
+            </div>
           )}
         </Col>
       </Row>
-      <Row>{isSignedIn && hasMfa && <AccountList accounts={apps} />}</Row>
+      <Row>{isSignedIn && hasMfa && <AccountList />}</Row>
       {isSignedIn && (
         <>
           {!isEmailVerified && <VerifyEmail email={auth.currentUser.email} />}
           {isEmailVerified && !hasMfa && (
-            <Button
-              style={{ position: "static", bottom: 30 + "px" }}
-              type="button"
-              className="btn btn-secondary"
-              onClick={(e) => {
-                e.preventDefault();
-                navigate("/mfa");
-              }}
-            >
-              {hasMfa ? "Back to Sign In Page" : "Create MFA"}
-            </Button>
+            <>
+              <p>You need to enroll in MFA first.</p>
+              <Button
+                id="signin-signup-button"
+                onClick={(e) => {
+                  e.preventDefault();
+                  navigate("/");
+                }}
+              >
+                Back to home page
+              </Button>
+            </>
           )}
 
           <button

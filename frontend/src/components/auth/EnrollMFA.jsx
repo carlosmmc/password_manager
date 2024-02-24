@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState } from "react";
 import {
   setPersistence,
   browserSessionPersistence,
@@ -6,81 +6,66 @@ import {
   PhoneAuthProvider,
   PhoneMultiFactorGenerator,
 } from "firebase/auth";
-import { useAuth, handleRecaptcha, signOutEvent } from "../../helpers/helpers.js";
-import { useNavigate } from "react-router-dom";
-import Button from "react-bootstrap/Button";
-import Modal from "react-bootstrap/Modal";
+import { useAuth, handleRecaptcha } from "../../helpers/helpers.js";
+import { Button, InputGroup, Form } from "react-bootstrap";
+import "react-phone-number-input/style.css";
+import PhoneInput from "react-phone-number-input";
 
 const EnrollMFA = ({ vid }) => {
-  const { auth, isSignedIn, pending, user, hasMfa, isEmailVerified } =
-    useAuth();
+  const { auth, isSignedIn, user, hasMfa } = useAuth();
   setPersistence(auth, browserSessionPersistence).catch((error) => {
     console.error(error);
   });
-  const navigate = useNavigate();
 
   const [sendText, setSendText] = useState(false);
   const [verificationCode, getVerificationCode] = useState("");
-  const [phoneNumber, getPhoneNumber] = useState("");
+  const [phoneNumber, getPhoneNumber] = useState();
   const [verificationId, setVerificationId] = useState(vid);
-
-  console.log(hasMfa);
+  const [phoneVerificationError, setPhoneVerificationError] = useState();
 
   const handleSendText = (e) => {
     e.preventDefault();
-    handleRecaptcha(e);
-    const recaptchaVerifier = window.recaptchaVerifier;
-    if (!hasMfa) {
-      multiFactor(user)
-        .getSession()
-        .then(function (multiFactorSession) {
-          // Specify the phone number and pass the MFA session.
-          const phoneInfoOptions = {
-            phoneNumber: phoneNumber,
-            session: multiFactorSession,
-          };
-
-          const phoneAuthProvider = new PhoneAuthProvider(auth);
-
-          // Send SMS verification code.
-          return phoneAuthProvider.verifyPhoneNumber(
-            phoneInfoOptions,
-            recaptchaVerifier
-          );
-        })
-        .then(function (verificationId) {
-          setVerificationId(verificationId);
-          setSendText(true);
-          console.log("sent")
-        })
-        .catch((error) => {
-          return (
-            <>
-              <div
-                className="modal show"
-                style={{ display: "block", position: "initial" }}
-              >
-                <Modal.Dialog>
-                  <Modal.Header closeButton>
-                    <Modal.Title>Modal title</Modal.Title>
-                  </Modal.Header>
-                  <Modal.Body>
-                    <p>
-                      This operation is sensitive and requires recent
-                      authentication. Log in again before retrying this request.
-                    </p>
-                  </Modal.Body>
-                  <Modal.Footer>
-                    <Button variant="secondary">Close</Button>
-                    <Button variant="primary" onClick={signOutEvent}>Save changes</Button>
-                  </Modal.Footer>
-                </Modal.Dialog>
-              </div>
-            </>
-          );
-        });
-    } else {
+    try {
+      handleRecaptcha(e);
+    } catch (error) {
+      setPhoneVerificationError("Recaptcha error. Please refresh the page.");
     }
+
+    const recaptchaVerifier = window.recaptchaVerifier;
+    multiFactor(user)
+      .getSession()
+      .then(function (multiFactorSession) {
+        // Specify the phone number and pass the MFA session.
+        const phoneInfoOptions = {
+          phoneNumber: phoneNumber,
+          session: multiFactorSession,
+        };
+
+        const phoneAuthProvider = new PhoneAuthProvider(auth);
+
+        // Send SMS verification code.
+        return phoneAuthProvider.verifyPhoneNumber(
+          phoneInfoOptions,
+          recaptchaVerifier
+        );
+      })
+      .then(function (verificationId) {
+        setVerificationId(verificationId);
+        setSendText(true);
+      })
+      .catch((error) => {
+        console.log(error);
+        if (error.code === "auth/requires-recent-login") {
+          setPhoneVerificationError(
+            "This operation is sensitive and requires recent authentication. Log in again before retrying this request."
+          );
+        }
+        if (error.code === "auth/invalid-phone-number") {
+          setPhoneVerificationError(
+            "Invalid phone number. Please enter a new one."
+          );
+        }
+      });
   };
 
   const handleEnterCode = (e) => {
@@ -93,7 +78,7 @@ const EnrollMFA = ({ vid }) => {
       return multiFactor(user)
         .enroll(multiFactorAssertion, mfaDisplayName)
         .then(() => {
-          //successfully enrolled, maybe add a modal?
+          //successfully enrolled
           window.location.reload();
         })
         .catch((error) => {
@@ -110,24 +95,34 @@ const EnrollMFA = ({ vid }) => {
       </div>
       {isSignedIn && !hasMfa && (
         <>
-          <input
-            onChange={(e) => {
-              getPhoneNumber(e.target.value);
-            }}
-          ></input>
-          <button onClick={handleSendText}>Confirm</button>
+          <InputGroup className="mb-3">
+            <PhoneInput
+              placeholder="Enter phone number"
+              defaultCountry="US"
+              value={phoneNumber}
+              onChange={getPhoneNumber}
+            />
+          </InputGroup>
+          {phoneVerificationError && (
+            <p id="warning">{phoneVerificationError}</p>
+          )}
+          <Button onClick={handleSendText}>Confirm</Button>
           {sendText && (
             <>
               <div>
                 We've sent a text to your phone number: {phoneNumber}. Please
                 enter the verification code.
               </div>
-              <input
-                onChange={(e) => {
-                  getVerificationCode(e.target.value);
-                }}
-              ></input>
-              <button onClick={handleEnterCode}>Submit code</button>
+              <InputGroup className="mb-3">
+                <Form.Control
+                  className="form-control"
+                  type="number"
+                  onChange={(e) => {
+                    getVerificationCode(e.target.value);
+                  }}
+                />
+              </InputGroup>
+              <Button onClick={handleEnterCode}>Submit code</Button>
             </>
           )}
         </>
@@ -143,8 +138,6 @@ const EnrollMFA = ({ vid }) => {
           <button onClick={handleEnterCode}>Submit code</button>
         </>
       )}
-
-      <div id="rcc"></div>
     </>
   );
 };

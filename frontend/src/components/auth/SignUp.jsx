@@ -1,22 +1,17 @@
-import React, { useState, useEffect, useRef } from "react";
-import { Button, Form, Stack } from "react-bootstrap";
+import React, { useState } from "react";
+import { Button, Form } from "react-bootstrap";
 import {
-  getAuth,
-  signInWithEmailAndPassword,
-  getMultiFactorResolver,
   createUserWithEmailAndPassword,
   updateProfile,
   sendEmailVerification,
-  PhoneMultiFactorGenerator,
-  PhoneAuthProvider,
 } from "firebase/auth";
 import { auth } from "../../firebase.js";
-import { handleRecaptcha } from "../../helpers/helpers.js";
 
 const SignUp = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [username, setUsername] = useState("");
+  const [errorShow, setErrorShow] = useState(false);
 
   const handleEmailInput = (e) => {
     setEmail(e.target.value);
@@ -25,8 +20,6 @@ const SignUp = () => {
   const handlePasswordInput = (e) => {
     setPassword(e.target.value);
   };
-
-  console.log(auth.currentUser);
 
   const actionCodeSettings = {
     url: "http://localhost:3000/",
@@ -45,17 +38,13 @@ const SignUp = () => {
           console.log(`profile updated, username: ${username}`);
         });
         sendEmailVerification(user, actionCodeSettings)
-        .then(() => {
-          console.log("sent");
-        })
-        .catch((error) => {
-          console.log(`not sent! error: ${error}`);
-        });
+          .then(() => {})
+          .catch((error) => {
+            console.log(`not sent! error: ${error}`);
+          });
       })
       .catch((error) => {
-        const errorCode = error.code;
-        const errorMessage = error.message;
-        // ..
+        setErrorShow("Please check if a valid email address is entered");
       });
   };
 
@@ -66,7 +55,7 @@ const SignUp = () => {
         <Form.Group className="mb-3" controlId="formBasicUsername">
           <Form.Label>Your name</Form.Label>
           <Form.Control
-          autoComplete={"name"}
+            autoComplete={"name"}
             type="name"
             placeholder="Enter your name"
             required={true}
@@ -78,7 +67,7 @@ const SignUp = () => {
         <Form.Group className="mb-3" controlId="formBasicEmail">
           <Form.Label>Email address</Form.Label>
           <Form.Control
-          autoComplete={"username"}
+            autoComplete={"username"}
             type="email"
             placeholder="Enter email"
             required={true}
@@ -91,7 +80,7 @@ const SignUp = () => {
         <Form.Group className="mb-3" controlId="formBasicPassword">
           <Form.Label>Master Password</Form.Label>
           <Form.Control
-          autoComplete={"new-password"}
+            autoComplete={"new-password"}
             type="password"
             placeholder="Enter password"
             onChange={handlePasswordInput}
@@ -105,7 +94,16 @@ const SignUp = () => {
             <li>Special character: !@#$%^&*</li>
           </Form.Text>
         </Form.Group>
-        <Button variant="primary" onClick={handleSignUp}>
+        {errorShow && (
+          <>
+            <div id="warning">{errorShow}</div>
+          </>
+        )}
+        <Button
+          id="signin-signup-button"
+          variant="primary"
+          onClick={handleSignUp}
+        >
           Confirm
         </Button>
       </Form>

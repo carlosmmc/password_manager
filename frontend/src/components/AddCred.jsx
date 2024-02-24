@@ -5,7 +5,7 @@ import { a1Details } from "../sampledata.js";
 import { generatePassword } from "../helpers/randomPassword.js";
 import { IoMdEye, IoMdEyeOff, IoMdRefresh, IoMdCopy } from "react-icons/io";
 
-const AccountDetails = ({ details }) => {
+const AddCred = () => {
   const [show, setShow] = useState(false);
   const [value, setValue] = useState("");
   const handleClose = () => {
@@ -60,14 +60,17 @@ const AccountDetails = ({ details }) => {
 
   return (
     <>
-      <tr className="table-active">
-        <th scope="row" onClick={handleShow}>
-          {details.data}
-        </th>
-      </tr>
+      <Button
+        type="button"
+        style={{ position: "relative", top: 2 + "vh" }}
+        className="btn btn-primary"
+        onClick={handleShow}
+      >
+        Add New Credential
+      </Button>
       <Modal show={show} onHide={handleClose} dialogClassName="my-modal">
         <Modal.Header closeButton>
-          <Modal.Title>Edit Item</Modal.Title>
+          <Modal.Title>Add New Item</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <Form>
@@ -75,27 +78,22 @@ const AccountDetails = ({ details }) => {
               <Col>
                 <Form.Group >
                   <Form.Label>App Name</Form.Label>
-                  <Form.Control
-                    defaultValue={details.data}
-                    type="appName"
-                    required={true}
-                  />
+                  <Form.Control type="appName" required={true} />
                 </Form.Group>
               </Col>
               <Col>
                 <Form.Group  controlId="websiteUrl">
                   <Form.Label>Website URL (Optional)</Form.Label>
-                  <Form.Control defaultValue={value.website} type="url" />
+                  <Form.Control type="url" />
                 </Form.Group>
               </Col>
             </Row>
 
             <Row>
               <Col>
-                <Form.Group controlId="formBasicEmail">
+                <Form.Group  controlId="formBasicEmail">
                   <Form.Label>Email </Form.Label>
                   <Form.Control
-                    defaultValue={value.email}
                     type="email"
                     required={true}
                   />
@@ -105,7 +103,6 @@ const AccountDetails = ({ details }) => {
                 <Form.Label>Password</Form.Label>
                 <InputGroup >
                   <Form.Control
-                    defaultValue={value.password}
                     type={pwShow ? "text" : "password"}
                     placeholder="Password"
                   />
@@ -167,7 +164,7 @@ const AccountDetails = ({ details }) => {
                 <Row>
                   <Form.Label>Password Requirement</Form.Label>
                   <Col>
-                    <Form.Group controlId="checkNumber">
+                    <Form.Group  controlId="checkNumber">
                       <Form.Check
                         type="checkbox"
                         label="0-9"
@@ -179,7 +176,7 @@ const AccountDetails = ({ details }) => {
                     </Form.Group>
                   </Col>
                   <Col>
-                    <Form.Group controlId="checkLowerCase">
+                    <Form.Group  controlId="checkLowerCase">
                       <Form.Check
                         type="checkbox"
                         label="a-z"
@@ -191,7 +188,7 @@ const AccountDetails = ({ details }) => {
                     </Form.Group>
                   </Col>
                   <Col>
-                    <Form.Group controlId="checkUpperCase">
+                    <Form.Group  controlId="checkUpperCase">
                       <Form.Check
                         type="checkbox"
                         label="A-Z"
@@ -203,7 +200,7 @@ const AccountDetails = ({ details }) => {
                     </Form.Group>
                   </Col>
                   <Col>
-                    <Form.Group controlId="checkSpecialChar">
+                    <Form.Group  controlId="checkSpecialChar">
                       <Form.Check
                         type="checkbox"
                         label="!@#$%^&*"
@@ -245,4 +242,4 @@ const AccountDetails = ({ details }) => {
   );
 };
 
-export default AccountDetails;
+export default AddCred;

@@ -1,11 +1,23 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import AccountDetails from "./AccountDetails.jsx";
 import { Col } from "react-bootstrap";
 
-const AccountList = ({ accounts }) => {
+const AccountList = () => {
   // do decryption in here
 
-  const sorted = accounts.sort((a, b) => {
+  const [apps, setApps] = useState([]);
+  const loadApps = async () => {
+    const response = await fetch("password-manager-osu.wl.r.appspot.com/api/v1/accounts/a8fc5384-1dbe-4763-b0ab-40bffb02f5a4/items").catch((error) => {
+      console.log(error)
+    });
+    const data = await response.json();
+    setApps(data);
+  };
+  useEffect(() => {
+    setApps([{data: "fsddfsf"}, {data:"ewrwrwrwe"}]);
+  }, []);
+
+  const sorted = apps.sort((a, b) => {
     if (a.data > b.data) {
       return 1;
     } else {
