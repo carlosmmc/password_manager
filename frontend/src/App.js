@@ -6,9 +6,7 @@ import Header from "./components/Header.jsx";
 import HomePage from "./pages/HomePage.jsx";
 import AccountOverviewPage from "./pages/AccountOverviewPage.jsx";
 
-
 function App() {
-
   return (
     <Router>
       <main>
@@ -20,6 +18,7 @@ function App() {
           </Routes>
         </Container>
       </main>
+      <div id="rcc"></div>
       <Footer />
     </Router>
   );
