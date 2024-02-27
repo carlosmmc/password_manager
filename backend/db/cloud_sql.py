@@ -1,9 +1,11 @@
 import os
 import uuid
 import sqlalchemy
+from dotenv import load_dotenv
 from google.cloud.sql.connector import Connector, IPTypes
 from api.helpers import ParamValidation
 
+load_dotenv()
 
 # Helper method to get database connection
 def get_db_connection():
@@ -22,11 +24,12 @@ connector = Connector()
 # variables for local connection
 # u = os.getenv("LOCAL_DB_USER")
 # pw = os.getenv("LOCAL_DB_PW")
+# h = os.getenv("LOCAL_DB_HOST")
 
 pool = sqlalchemy.create_engine(
     "postgresql+pg8000://",
     creator=get_db_connection,
-    # f"postgresql+pg8000://{u}:{pw}@localhost:5432/prod"
+    # f"postgresql+pg8000://{u}:{pw}@{h}/prod"
 )
 
 
@@ -314,7 +317,6 @@ def update_item(item_id, account_id, kid, enc, overview, details):
     return ParamValidation(True, item_id)
 
 
-# delete_item item_id, account_id
 def delete_item(account_id, item_id):
     """
     Finds a specific item by item id.
@@ -336,7 +338,6 @@ def delete_item(account_id, item_id):
     if is_result == []:
         return ParamValidation(False, {"Error": ["item not found"]})
 
-    # DELETE FROM films WHERE kind <> 'Musical';
     i_query = "DELETE FROM Items WHERE id = :item_id AND usid = :account_id;"
     execute_insert_query(
         i_query,
