@@ -29,6 +29,7 @@ logger = client.logger("MAIN_APPLICATION")
 
 
 @app.route("/")
+@app.route("/account")
 def root():
     # to get user once we add auth back in
     # user = g.user if g.user else None
