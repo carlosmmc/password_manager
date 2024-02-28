@@ -73,9 +73,8 @@ const HomePage = () => {
 
           <button
             type="button"
-            className="btn btn-secondary"
             onClick={signOutEvent}
-            id="signin-signup-button"
+            className="signin-signup-button btn btn-secondary"
           >
             Sign out
           </button>

@@ -48,7 +48,7 @@ const AccountOverviewPage = () => {
             <>
               <p>You need to enroll in MFA first.</p>
               <Button
-                id="signin-signup-button"
+                className="signin-signup-button"
                 onClick={(e) => {
                   e.preventDefault();
                   navigate("/");

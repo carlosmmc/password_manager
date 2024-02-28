@@ -100,7 +100,7 @@ const SignUp = () => {
           </>
         )}
         <Button
-          id="signin-signup-button"
+          className="signin-signup-button"
           variant="primary"
           onClick={handleSignUp}
         >
