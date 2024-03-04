@@ -36,7 +36,7 @@ const SendTextMFA = ({ verificationId, resolver }) => {
           }}
         />
       </InputGroup>
-      <Button onClick={handleVerificationCodeSubmit}>Submit Code</Button>
+      <Button className="signin-signup-button" onClick={handleVerificationCodeSubmit}>Submit Code</Button>
       {phoneVerificationError && (
         <>
           <div id="warning">

@@ -5,6 +5,8 @@ import {
   getMultiFactorResolver,
   PhoneMultiFactorGenerator,
   PhoneAuthProvider,
+  signInWithPopup,
+  GoogleAuthProvider,
 } from "firebase/auth";
 import { handleRecaptcha } from "../../helpers/helpers.js";
 import SendTextMFA from "./SendTextMFA.jsx";
@@ -16,6 +18,32 @@ const SignIn = ({ auth }) => {
   const [mfaTextSent, setMfaTextSent] = useState(false);
   const [mfaResolver, setMfaResolver] = useState();
   const [errorShow, setErrorShow] = useState(false);
+
+  const handleGoogle = (e) => {
+    e.preventDefault()
+    const provider = new GoogleAuthProvider();
+    auth.languageCode = "en";
+    signInWithPopup(auth, provider)
+      .then((result) => {
+        // This gives you a Google Access Token. You can use it to access the Google API.
+        const credential = GoogleAuthProvider.credentialFromResult(result);
+        const token = credential.accessToken;
+        // The signed-in user info.
+        const user = result.user;
+        // IdP data available using getAdditionalUserInfo(result)
+        // ...
+      })
+      .catch((error) => {
+        // Handle Errors here.
+        const errorCode = error.code;
+        const errorMessage = error.message;
+        // The email of the user's account used.
+        const email = error.customData.email;
+        // The AuthCredential type that was used.
+        const credential = GoogleAuthProvider.credentialFromError(error);
+        // ...
+      });
+  };
 
   const handleEmailInput = (e) => {
     setEmail(e.target.value);
@@ -98,15 +126,14 @@ const SignIn = ({ auth }) => {
           </>
         )}
         {errorShow && <div id="warning">{errorShow}</div>}
-        <Stack direction="horizontal" gap={5}>
           <Button
-            id="signin-signup-button"
+            className="signin-signup-button"
             variant="primary"
             onClick={handleSignIn}
           >
             Log in
-          </Button>
-        </Stack>
+          </Button >
+          {/* <Button className="signin-signup-button" onClick={handleGoogle}>Google</Button> */}
       </Form>
     </>
   );

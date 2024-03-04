@@ -34,12 +34,12 @@ export function generatePassword(length, uppercase, lowercase, numbers, specialC
         password += charPool.charAt(randomIndex);
     }
 
-    const randomSort = new Uint32Array(1)
-    crypto.getRandomValues(randomSort)
-    const randomFloat = randomSort[0] / Math.pow(2, 32)
+    const randomSortArr = new Uint32Array(length)
+    crypto.getRandomValues(randomSortArr)
+    let idx = 0;
 
     // Shuffle the password characters to make it more random
-    password = password.split("").sort(() => randomFloat - 0.5).join("");
+    password = password.split("").sort(() => randomSortArr[idx++] / Math.pow(2, 32) - 0.5).join("");
 
     return password;
 }

@@ -106,7 +106,7 @@ const EnrollMFA = ({ vid }) => {
           {phoneVerificationError && (
             <p id="warning">{phoneVerificationError}</p>
           )}
-          <Button onClick={handleSendText}>Confirm</Button>
+          <Button className="signin-signup-button" onClick={handleSendText}>Confirm</Button>
           {sendText && (
             <>
               <div>
@@ -122,7 +122,7 @@ const EnrollMFA = ({ vid }) => {
                   }}
                 />
               </InputGroup>
-              <Button onClick={handleEnterCode}>Submit code</Button>
+              <Button className="signin-signup-button" onClick={handleEnterCode}>Submit code</Button>
             </>
           )}
         </>
@@ -135,7 +135,7 @@ const EnrollMFA = ({ vid }) => {
             }}
           ></input>
 
-          <button onClick={handleEnterCode}>Submit code</button>
+          <button className="signin-signup-button" onClick={handleEnterCode}>Submit code</button>
         </>
       )}
     </>
