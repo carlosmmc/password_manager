@@ -12,7 +12,7 @@ import { Button } from "react-bootstrap";
 import Loader from "../components/shared/Loader.jsx";
 
 const HomePage = () => {
-  const { auth, isSignedIn, pending, user, hasMfa, isEmailVerified } =
+  const { auth, isSignedIn, pending, user, hasMfa, isEmailVerified, accountInfo } =
     useAuth();
   setPersistence(auth, browserSessionPersistence).catch((error) => {
     console.error(error);

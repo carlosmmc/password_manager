@@ -7,6 +7,7 @@ import {
   PhoneMultiFactorGenerator,
 } from "firebase/auth";
 import { useAuth, handleRecaptcha } from "../../helpers/helpers.js";
+import { createAccount } from "../../helpers/requests.js";
 import { Button, InputGroup, Form } from "react-bootstrap";
 import "react-phone-number-input/style.css";
 import PhoneInput from "react-phone-number-input";
@@ -52,6 +53,11 @@ const EnrollMFA = ({ vid }) => {
       .then(function (verificationId) {
         setVerificationId(verificationId);
         setSendText(true);
+        // encrypt email to get JSON here.
+        const emailAddr = user.email
+        const res = createAccount(emailAddr);
+        console.log(res)
+
       })
       .catch((error) => {
         console.log(error);

@@ -11,7 +11,7 @@ import AddCred from "../components/AddCred.jsx";
 const AccountOverviewPage = () => {
   const navigate = useNavigate();
 
-  const { auth, isSignedIn, pending, hasMfa, isEmailVerified } = useAuth();
+  const { auth, isSignedIn, pending, hasMfa, isEmailVerified, accountInfo } = useAuth();
   setPersistence(auth, browserSessionPersistence).catch((error) => {
     console.error(error);
   });
@@ -35,12 +35,12 @@ const AccountOverviewPage = () => {
         <Col>
           {isSignedIn && hasMfa && (
             <div>
-              <AddCred />
+              <AddCred accountInfo={accountInfo}/>
             </div>
           )}
         </Col>
       </Row>
-      <Row>{isSignedIn && hasMfa && <AccountList />}</Row>
+      <Row>{isSignedIn && hasMfa && <AccountList accountInfo={accountInfo}/>}</Row>
       {isSignedIn && (
         <>
           {!isEmailVerified && <VerifyEmail email={auth.currentUser.email} />}

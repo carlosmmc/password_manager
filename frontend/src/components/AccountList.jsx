@@ -1,16 +1,15 @@
 import React, { useState, useEffect } from "react";
 import AccountDetails from "./AccountDetails.jsx";
 import { Col } from "react-bootstrap";
+import { getOverviewList } from "../helpers/requests.js";
 
-const AccountList = () => {
+const AccountList = ({accountInfo}) => {
   // do decryption in here
 
-  const baseLink = "password-manager-osu.wl.r.appspot.com/api/v1/accounts/";
-  const accountId = "ACCOUNTID";
+  const accountId = accountInfo.id;
   const [apps, setApps] = useState([]);
   const loadApps = async () => {
-    const response = await fetch(baseLink + accountId + "/items");
-    const data = await response.json()
+  const data = await getOverviewList(accountId)
 
     setApps(data);
   };
@@ -19,7 +18,7 @@ const AccountList = () => {
   }, []);
 
   const sorted = apps.sort((a, b) => {
-    if (a.data > b.data) {
+    if (a.results > b.results) {
       return 1;
     } else {
       return -1;

@@ -1,8 +1,7 @@
-import { auth} from "../firebase.js";
-import {
-  RecaptchaVerifier,
-} from "firebase/auth";
+import { auth } from "../firebase.js";
+import { RecaptchaVerifier } from "firebase/auth";
 import { useEffect, useState } from "react";
+import { getAccountId } from "./requests.js";
 
 /**
  * onClick event function to sign out user
@@ -10,8 +9,7 @@ import { useEffect, useState } from "react";
  */
 export const signOutEvent = (e) => {
   e.preventDefault();
-  auth.signOut().then(() => {
-  });
+  auth.signOut().then(() => {});
 };
 
 /**
@@ -19,24 +17,38 @@ export const signOutEvent = (e) => {
  * @returns Firebase user auth and sign in status
  */
 export function useAuth() {
-  const [authState, setAuthState] = useState({isSignedIn: false, pending: true, user:null});
+  const [authState, setAuthState] = useState({
+    isSignedIn: false,
+    pending: true,
+    user: null,
+  });
   const [hasMfa, setHasMfa] = useState(false);
   const [isEmailVerified, setIsEmailVerified] = useState(false);
+  const [accountInfo, setAccountInfo] = useState();
 
-  function checkUserSignedIn(user) {
+  const checkUserSignedIn = async (user) => {
     if (user) {
-      console.log(`Signed in as: ${user.displayName} (${user.email})`);
-      setAuthState({isSignedIn: true, pending: false, user:user});
+      const emailAddr = user.email;
+      console.log(`Signed in as: ${user.displayName} (${emailAddr})`);
+      setAuthState({ isSignedIn: true, pending: false, user: user });
       if (user.multiFactor.enrolledFactors.length > 0) {
         setHasMfa(true);
       }
       if (user.emailVerified) {
         setIsEmailVerified(true);
       }
+      if (user.multiFactor.enrolledFactors.length > 0 && user.emailVerified) {
+        const res = { id: "a8fc5384-1dbe-4763-b0ab-40bffb02f5a4" };
+        // getAccountId(emailAddr)
+        if (res.id) {
+          console.log("111111111111111");
+          setAccountInfo(res);
+        }
+      }
     } else {
-      setAuthState({isSignedIn: false, pending: false, user:null});
+      setAuthState({ isSignedIn: false, pending: false, user: null });
     }
-  }
+  };
 
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged(function (user) {
@@ -46,7 +58,7 @@ export function useAuth() {
     return () => unsubscribe();
   }, []);
 
-  return { auth, ...authState, hasMfa, isEmailVerified };
+  return { auth, ...authState, hasMfa, isEmailVerified, accountInfo };
 }
 
 export const handleRecaptcha = (e) => {
@@ -77,3 +89,7 @@ export const handleEmailVerification = (e) => {
       console.log(error);
     });
 };
+
+
+
+

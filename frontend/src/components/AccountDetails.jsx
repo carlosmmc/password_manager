@@ -3,6 +3,7 @@ import { Modal, Button, Col, Row, InputGroup } from "react-bootstrap";
 import Form from "react-bootstrap/Form";
 import { a1Details } from "../sampledata.js";
 import { generatePassword } from "../helpers/randomPassword.js";
+import { editCredential } from "../helpers/requests.js";
 import { IoMdEye, IoMdEyeOff, IoMdRefresh, IoMdCopy } from "react-icons/io";
 
 const AccountDetails = ({ details }) => {
@@ -11,6 +12,13 @@ const AccountDetails = ({ details }) => {
   const handleClose = () => {
     setShow(false);
   };
+
+  const handleSaveChanges = (e) => {
+    e.preventDefault()
+    // encrypt here
+    editCredential()
+  }
+
   const handleShow = () => {
     setShow(true);
     setValue(a1Details[0]);
@@ -22,6 +30,8 @@ const AccountDetails = ({ details }) => {
     setNumCheck(true);
     setSpCharCheck(false);
   };
+  
+  console.log(details)
 
   const [sliderValue, setSliderValue] = useState(16);
 
@@ -236,7 +246,7 @@ const AccountDetails = ({ details }) => {
           <Button variant="secondary" onClick={handleClose}>
             Close
           </Button>
-          <Button variant="primary" type="submit" onClick={handleClose}>
+          <Button variant="primary" onClick={handleSaveChanges}>
             Save Changes
           </Button>
         </Modal.Footer>

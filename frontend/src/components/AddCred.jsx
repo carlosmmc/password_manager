@@ -5,7 +5,7 @@ import { a1Details } from "../sampledata.js";
 import { generatePassword } from "../helpers/randomPassword.js";
 import { IoMdEye, IoMdEyeOff, IoMdRefresh, IoMdCopy } from "react-icons/io";
 
-const AddCred = () => {
+const AddCred = ({accountInfo}) => {
   const [show, setShow] = useState(false);
   const [value, setValue] = useState("");
   const handleClose = () => {
