@@ -5,7 +5,7 @@ import { generatePassword } from "../helpers/randomPassword.js";
 import { createCredential } from "../helpers/requests.js";
 import { IoMdEye, IoMdEyeOff, IoMdRefresh, IoMdCopy } from "react-icons/io";
 
-const AddCred = ({ accountInfo, userId }) => {
+const AddCred = ({ userInfo }) => {
   const [show, setShow] = useState(false);
   const handleClose = () => {
     setShow(false);
@@ -69,14 +69,18 @@ const AddCred = ({ accountInfo, userId }) => {
       password: password,
     };
     console.log(credDetails);
+
+    // sample is set to test add without encryption
     const sample = {
-      kid: appName,
+      kid: userInfo.kid,
       enc: "A256GCM",
       cty: "b5+jwk+json",
-      overview: website,
-      details: email,
+      overview: appName,
+      details: website,
     };
-    const changed = await createCredential(userId, sample);
+
+    // change input from sample to credDetails when encryption is finished
+    const changed = await createCredential(userInfo.id, sample);
     if (changed) {
       console.log("added");
       window.location.reload();

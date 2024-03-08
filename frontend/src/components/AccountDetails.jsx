@@ -3,21 +3,20 @@ import { Modal, Button, Col, Row, InputGroup } from "react-bootstrap";
 import Form from "react-bootstrap/Form";
 import { a1Details } from "../sampledata.js";
 import { generatePassword } from "../helpers/randomPassword.js";
-import { editCredential, getCredential } from "../helpers/requests.js";
+import { editCredential, getCredential, deleteCredential } from "../helpers/requests.js";
 import { IoMdEye, IoMdEyeOff, IoMdRefresh, IoMdCopy } from "react-icons/io";
 
-const AccountDetails = ({ accountInfo, userId }) => {
+const AccountDetails = ({ itemInfo, userId, kid }) => {
   const [show, setShow] = useState(false);
   const value = a1Details[0];
   const handleClose = () => {
     setShow(false);
   };
 
-  const itemId = accountInfo.id;
 
   const [details, setDetails] = useState({});
   const loadDetails = async () => {
-    const data = await getCredential(userId, itemId);
+    const data = await getCredential(userId, itemInfo.id);
     setDetails(data);
     setAppName(details.data);
     setWebsite(value.website);
@@ -26,7 +25,7 @@ const AccountDetails = ({ accountInfo, userId }) => {
   };
   useEffect(() => {
     loadDetails();
-  }, []);
+  }, [itemInfo]);
 
   const [appName, setAppName] = useState("");
   const [website, setWebsite] = useState("");
@@ -40,15 +39,18 @@ const AccountDetails = ({ accountInfo, userId }) => {
       email: email,
       password: password,
     };
+
+    // sample is set to test add without encryption
     const sample = {
-      id: "f37e85bf-cd37-4fe7-a684-93659a0e7d2c",
-      kid: "27342754-60e8-4f9b-8be9-61c8d7dc3041",
+      id: details.id,
+      kid: kid,
       enc: "null",
       cty: "b5+jwk+json",
-      overview: "rdfthyukjlA4nmajhgf",
-      details: appName,
+      overview: appName,
+      details: website,
     };
-    const changed = await editCredential(userId, itemId, credDetails);
+    // change input from sample to credDetails when encryption is finished
+    const changed = await editCredential(userId, itemInfo.id, sample);
     if (changed) {
       console.log("changed");
       window.location.reload();
@@ -68,7 +70,6 @@ const AccountDetails = ({ accountInfo, userId }) => {
     setSpCharCheck(false);
   };
 
-  console.log(accountInfo);
 
   const [sliderValue, setSliderValue] = useState(16);
 
@@ -105,16 +106,22 @@ const AccountDetails = ({ accountInfo, userId }) => {
     navigator.clipboard.writeText(stringToBeCopied);
   }
 
-  const handleDelete = (e) => {
-    e.preventDefault()
-    
-  }
+  const handleDelete = async (e) => {
+    e.preventDefault();
+    const deleted = await deleteCredential(userId, itemInfo.id)
+    if (deleted) {
+      console.log("deleted")
+      window.location.reload();
+    } else {
+      console.log("not deleted")
+    }
+  };
 
   return (
     <>
       <tr className="table-active">
         <th scope="row" onClick={handleShow}>
-          {accountInfo.data}
+          {itemInfo.data}
         </th>
       </tr>
       <Modal show={show} onHide={handleClose} dialogClassName="my-modal">
@@ -128,7 +135,7 @@ const AccountDetails = ({ accountInfo, userId }) => {
                 <Form.Group>
                   <Form.Label>App Name</Form.Label>
                   <Form.Control
-                    defaultValue={details.data}
+                    defaultValue={itemInfo.data}
                     required={true}
                     onChange={(e) => setAppName(e.target.value)}
                   />
@@ -138,7 +145,7 @@ const AccountDetails = ({ accountInfo, userId }) => {
                 <Form.Group controlId="websiteUrl">
                   <Form.Label>Website URL (Optional)</Form.Label>
                   <Form.Control
-                    defaultValue={value.website}
+                    defaultValue={details.data}
                     type="url"
                     onChange={(e) => setWebsite(e.target.value)}
                   />
@@ -151,7 +158,7 @@ const AccountDetails = ({ accountInfo, userId }) => {
                 <Form.Group controlId="formBasicEmail">
                   <Form.Label>Email </Form.Label>
                   <Form.Control
-                    defaultValue={value.email}
+                    defaultValue={details.id}
                     type="email"
                     required={true}
                     onChange={(e) => setEmail(e.target.value)}
@@ -162,7 +169,7 @@ const AccountDetails = ({ accountInfo, userId }) => {
                 <Form.Label>Password</Form.Label>
                 <InputGroup>
                   <Form.Control
-                    defaultValue={value.password}
+                    defaultValue={details.kid}
                     type={pwShow ? "text" : "password"}
                     placeholder="Password"
                     onChange={(e) => setPassword(e.target.value)}
@@ -292,7 +299,9 @@ const AccountDetails = ({ accountInfo, userId }) => {
         </Modal.Body>
         <Modal.Footer>
           <Col>
-            <Button className="btn btn-danger" onClick={handleDelete}>Delete</Button>
+            <Button className="btn btn-danger" onClick={handleDelete}>
+              Delete
+            </Button>
           </Col>
           <Button variant="secondary" onClick={handleClose}>
             Close

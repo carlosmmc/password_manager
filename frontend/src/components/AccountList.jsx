@@ -4,19 +4,22 @@ import { Col } from "react-bootstrap";
 import { getOverviewList } from "../helpers/requests.js";
 
 const AccountList = ({ accountInfo }) => {
-  const userId = accountInfo.id;
   const [apps, setApps] = useState([]);
+  const [userId, setUserId] = useState([]);
 
   const loadApps = async () => {
-    const data = await getOverviewList(userId);
+    const data = await getOverviewList(accountInfo.id);
+
     setApps(data);
   };
   useEffect(() => {
-    loadApps();
-  }, []);
+    if (accountInfo) {
+      loadApps();
+    }
+  }, [accountInfo]);
 
   const sorted = apps.sort((a, b) => {
-    if (a.results > b.results) {
+    if (a.data > b.data) {
       return 1;
     } else {
       return -1;
@@ -35,7 +38,7 @@ const AccountList = ({ accountInfo }) => {
           </thead>
           <tbody>
             {sorted.map((account, i) => (
-              <AccountDetails accountInfo={account} key={i} userId={userId} />
+              <AccountDetails itemInfo={account} key={i} userId={accountInfo.id} kid={accountInfo.kid} />
             ))}
           </tbody>
         </table>

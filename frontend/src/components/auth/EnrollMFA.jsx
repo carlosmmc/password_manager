@@ -53,7 +53,6 @@ const EnrollMFA = ({ vid }) => {
       .then(function (verificationId) {
         setVerificationId(verificationId);
         setSendText(true);
-        // encrypt email to get JSON here.
         const emailAddr = user.email
         const res = createAccount(emailAddr);
         console.log(res)

@@ -24,25 +24,16 @@ export function useAuth() {
   });
   const [hasMfa, setHasMfa] = useState(false);
   const [isEmailVerified, setIsEmailVerified] = useState(false);
-  const [accountInfo, setAccountInfo] = useState();
 
   const checkUserSignedIn = async (user) => {
     if (user) {
-      const emailAddr = user.email;
-      console.log(`Signed in as: ${user.displayName} (${emailAddr})`);
+      console.log(`Signed in as: ${user.displayName} (${user.email})`);
       setAuthState({ isSignedIn: true, pending: false, user: user });
       if (user.multiFactor.enrolledFactors.length > 0) {
-        setHasMfa(true);
+        setHasMfa(true)
       }
       if (user.emailVerified) {
         setIsEmailVerified(true);
-      }
-      if (user.multiFactor.enrolledFactors.length > 0 && user.emailVerified) {
-        const res = { id: "a8fc5384-1dbe-4763-b0ab-40bffb02f5a4" };
-        // getUserId(emailAddr)
-        if (res.id) {
-          setAccountInfo(res);
-        }
       }
     } else {
       setAuthState({ isSignedIn: false, pending: false, user: null });
@@ -57,7 +48,7 @@ export function useAuth() {
     return () => unsubscribe();
   }, []);
 
-  return { auth, ...authState, hasMfa, isEmailVerified, accountInfo };
+  return { auth, ...authState, hasMfa, isEmailVerified };
 }
 
 export const handleRecaptcha = (e) => {
@@ -75,7 +66,7 @@ export const handleRecaptcha = (e) => {
 export const handleEmailVerification = (e) => {
   e.preventDefault();
   const actionCodeSettings = {
-    url: "/",
+    url: "https://password-manager-osu.wl.r.appspot.com/",
     handleCodeInApp: true,
   };
   auth.currentUser
@@ -88,7 +79,3 @@ export const handleEmailVerification = (e) => {
       console.log(error);
     });
 };
-
-
-
-

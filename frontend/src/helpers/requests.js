@@ -5,15 +5,19 @@
  */
 export const createAccount = async (emailAddr) => {
   // encrypt user email into account info here
-  const accountInfo = emailAddr;
+  const accountInfo = {
+    email: emailAddr,
+    public_key: emailAddr,
+    private_key: emailAddr,
+    account_key: emailAddr,
+  };
   const baseLink = "/api/v1/accounts";
   const response = await fetch(baseLink, {
     method: "POST",
     headers: {
-      Accept: "application/json",
       "Content-Type": "application/json",
     },
-    body: accountInfo,
+    body: JSON.stringify(accountInfo),
   }).catch((error) => console.log(error));
   const data = await response.json().catch((error) => {
     console.log(error);
@@ -56,15 +60,16 @@ export const getOverviewList = async (userId) => {
   const baseLink = `/api/v1/accounts/${userId}/items`;
   const response = await fetch(baseLink, {
     method: "GET",
-  }).catch((error) => console.log(error));
+  }).catch((error) => {console.log(error)});
   const data = await response.json().catch((error) => {
     console.log(error);
   });
   if (response.status === 200) {
-    // decrypt data here and return the decrypted version in a list like this [{id:"abcd", name:"amazon"}]
+    // decrypt data here and return the decrypted version in a list like this [{id:"abcd", data:"amazon"}]
     return data;
   } else {
     console.log(`Failed to get the account overview list. ${data.Error}`);
+    return []
   }
 };
 
@@ -145,11 +150,16 @@ export const editCredential = async (userId, itemId, credential) => {
   }
 };
 
-export const deleteCredential = async (userId, itemId, accountInfo) => {
+/**
+ * 
+ * @param {String} userId 
+ * @param {String} itemId 
+ * @returns {Boolean} if account is successfully deleted
+ */
+export const deleteCredential = async (userId, itemId) => {
   const baseLink = `/api/v1/accounts/${userId}/items/${itemId}`;
   const response = await fetch(baseLink, {
     method: "DELETE",
-    body: accountInfo,
   }).catch((error) => console.log(error));
   if (response.status === 204) {
     return true;
