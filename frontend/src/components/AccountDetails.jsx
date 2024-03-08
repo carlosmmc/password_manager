@@ -18,10 +18,10 @@ const AccountDetails = ({ itemInfo, userId, kid }) => {
   const loadDetails = async () => {
     const data = await getCredential(userId, itemInfo.id);
     setDetails(data);
-    setAppName(details.data);
-    setWebsite(value.website);
-    setEmail(value.email);
-    setPassword(value.password);
+    setAppName(itemInfo.data);
+    setWebsite(details.data);
+    setEmail(details.id);
+    setPassword(kid);
   };
   useEffect(() => {
     loadDetails();

@@ -1,7 +1,6 @@
 import { auth } from "../firebase.js";
 import { RecaptchaVerifier } from "firebase/auth";
 import { useEffect, useState } from "react";
-import { getUserId } from "./requests.js";
 
 /**
  * onClick event function to sign out user

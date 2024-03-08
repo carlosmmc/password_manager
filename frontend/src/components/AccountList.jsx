@@ -5,17 +5,15 @@ import { getOverviewList } from "../helpers/requests.js";
 
 const AccountList = ({ accountInfo }) => {
   const [apps, setApps] = useState([]);
-  const [userId, setUserId] = useState([]);
 
   const loadApps = async () => {
-    const data = await getOverviewList(accountInfo.id);
-
-    setApps(data);
+    if (accountInfo) {
+      const data = await getOverviewList(accountInfo.id);
+      setApps(data);
+    }
   };
   useEffect(() => {
-    if (accountInfo) {
-      loadApps();
-    }
+    loadApps();
   }, [accountInfo]);
 
   const sorted = apps.sort((a, b) => {
@@ -38,7 +36,12 @@ const AccountList = ({ accountInfo }) => {
           </thead>
           <tbody>
             {sorted.map((account, i) => (
-              <AccountDetails itemInfo={account} key={i} userId={accountInfo.id} kid={accountInfo.kid} />
+              <AccountDetails
+                itemInfo={account}
+                key={i}
+                userId={accountInfo.id}
+                kid={accountInfo.kid}
+              />
             ))}
           </tbody>
         </table>
