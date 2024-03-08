@@ -1,19 +1,17 @@
 import React, { useState } from "react";
 import { Modal, Button, Col, Row, InputGroup } from "react-bootstrap";
 import Form from "react-bootstrap/Form";
-import { a1Details } from "../sampledata.js";
 import { generatePassword } from "../helpers/randomPassword.js";
+import { createCredential } from "../helpers/requests.js";
 import { IoMdEye, IoMdEyeOff, IoMdRefresh, IoMdCopy } from "react-icons/io";
 
-const AddCred = ({accountInfo}) => {
+const AddCred = ({ accountInfo, userId }) => {
   const [show, setShow] = useState(false);
-  const [value, setValue] = useState("");
   const handleClose = () => {
     setShow(false);
   };
   const handleShow = () => {
     setShow(true);
-    setValue(a1Details[0]);
     setRandomPw("");
     setPwShow(false);
     setSliderValue(16);
@@ -58,6 +56,35 @@ const AddCred = ({accountInfo}) => {
     navigator.clipboard.writeText(stringToBeCopied);
   }
 
+  const [appName, setAppName] = useState("");
+  const [website, setWebsite] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const handleAddCred = async (e) => {
+    e.preventDefault();
+    const credDetails = {
+      appName: appName,
+      website: website,
+      email: email,
+      password: password,
+    };
+    console.log(credDetails);
+    const sample = {
+      kid: appName,
+      enc: "A256GCM",
+      cty: "b5+jwk+json",
+      overview: website,
+      details: email,
+    };
+    const changed = await createCredential(userId, sample);
+    if (changed) {
+      console.log("added");
+      window.location.reload();
+    } else {
+      console.log("not added");
+    }
+  };
+
   return (
     <>
       <Button
@@ -76,35 +103,44 @@ const AddCred = ({accountInfo}) => {
           <Form>
             <Row>
               <Col>
-                <Form.Group >
+                <Form.Group>
                   <Form.Label>App Name</Form.Label>
-                  <Form.Control type="appName" required={true} />
+                  <Form.Control
+                    type="appName"
+                    required={true}
+                    onChange={(e) => setAppName(e.target.value)}
+                  />
                 </Form.Group>
               </Col>
               <Col>
-                <Form.Group  controlId="websiteUrl">
+                <Form.Group controlId="websiteUrl">
                   <Form.Label>Website URL (Optional)</Form.Label>
-                  <Form.Control type="url" />
+                  <Form.Control
+                    type="url"
+                    onChange={(e) => setWebsite(e.target.value)}
+                  />
                 </Form.Group>
               </Col>
             </Row>
 
             <Row>
               <Col>
-                <Form.Group  controlId="formBasicEmail">
+                <Form.Group controlId="formBasicEmail">
                   <Form.Label>Email </Form.Label>
                   <Form.Control
                     type="email"
                     required={true}
+                    onChange={(e) => setEmail(e.target.value)}
                   />
                 </Form.Group>
               </Col>
               <Col>
                 <Form.Label>Password</Form.Label>
-                <InputGroup >
+                <InputGroup>
                   <Form.Control
                     type={pwShow ? "text" : "password"}
                     placeholder="Password"
+                    onChange={(e) => setPassword(e.target.value)}
                   />
                   <Button variant="outline-secondary" id="button-show">
                     {!pwShow && <IoMdEye onClick={handlePwShow} />}
@@ -114,7 +150,7 @@ const AddCred = ({accountInfo}) => {
                     variant="outline-secondary"
                     id="button-copy"
                     onClick={(e) => {
-                      copyText(value.password);
+                      copyText(password);
                     }}
                   >
                     <IoMdCopy />
@@ -127,7 +163,7 @@ const AddCred = ({accountInfo}) => {
                 <Row>
                   <div style={{ height: 100 + "px" }}>
                     <Form.Label>Random Password Generated</Form.Label>
-                    <InputGroup >
+                    <InputGroup>
                       <Form.Control
                         className="form-control form-control-lg"
                         type="text"
@@ -164,7 +200,7 @@ const AddCred = ({accountInfo}) => {
                 <Row>
                   <Form.Label>Password Requirement</Form.Label>
                   <Col>
-                    <Form.Group  controlId="checkNumber">
+                    <Form.Group controlId="checkNumber">
                       <Form.Check
                         type="checkbox"
                         label="0-9"
@@ -176,7 +212,7 @@ const AddCred = ({accountInfo}) => {
                     </Form.Group>
                   </Col>
                   <Col>
-                    <Form.Group  controlId="checkLowerCase">
+                    <Form.Group controlId="checkLowerCase">
                       <Form.Check
                         type="checkbox"
                         label="a-z"
@@ -188,7 +224,7 @@ const AddCred = ({accountInfo}) => {
                     </Form.Group>
                   </Col>
                   <Col>
-                    <Form.Group  controlId="checkUpperCase">
+                    <Form.Group controlId="checkUpperCase">
                       <Form.Check
                         type="checkbox"
                         label="A-Z"
@@ -200,7 +236,7 @@ const AddCred = ({accountInfo}) => {
                     </Form.Group>
                   </Col>
                   <Col>
-                    <Form.Group  controlId="checkSpecialChar">
+                    <Form.Group controlId="checkSpecialChar">
                       <Form.Check
                         type="checkbox"
                         label="!@#$%^&*"
@@ -233,8 +269,8 @@ const AddCred = ({accountInfo}) => {
           <Button variant="secondary" onClick={handleClose}>
             Close
           </Button>
-          <Button variant="primary" type="submit" onClick={handleClose}>
-            Save Changes
+          <Button variant="primary" type="submit" onClick={handleAddCred}>
+            Add
           </Button>
         </Modal.Footer>
       </Modal>

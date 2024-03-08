@@ -3,14 +3,12 @@ import AccountDetails from "./AccountDetails.jsx";
 import { Col } from "react-bootstrap";
 import { getOverviewList } from "../helpers/requests.js";
 
-const AccountList = ({accountInfo}) => {
-  // do decryption in here
-
-  const accountId = accountInfo.id;
+const AccountList = ({ accountInfo }) => {
+  const userId = accountInfo.id;
   const [apps, setApps] = useState([]);
-  const loadApps = async () => {
-  const data = await getOverviewList(accountId)
 
+  const loadApps = async () => {
+    const data = await getOverviewList(userId);
     setApps(data);
   };
   useEffect(() => {
@@ -37,7 +35,7 @@ const AccountList = ({accountInfo}) => {
           </thead>
           <tbody>
             {sorted.map((account, i) => (
-              <AccountDetails details={account} key={i} />
+              <AccountDetails accountInfo={account} key={i} userId={userId} />
             ))}
           </tbody>
         </table>

@@ -35,7 +35,7 @@ const AccountOverviewPage = () => {
         <Col>
           {isSignedIn && hasMfa && (
             <div>
-              <AddCred accountInfo={accountInfo}/>
+              <AddCred accountInfo={accountInfo} userId={accountInfo.id}/>
             </div>
           )}
         </Col>

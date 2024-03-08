@@ -1,7 +1,7 @@
 import { auth } from "../firebase.js";
 import { RecaptchaVerifier } from "firebase/auth";
 import { useEffect, useState } from "react";
-import { getAccountId } from "./requests.js";
+import { getUserId } from "./requests.js";
 
 /**
  * onClick event function to sign out user
@@ -39,9 +39,8 @@ export function useAuth() {
       }
       if (user.multiFactor.enrolledFactors.length > 0 && user.emailVerified) {
         const res = { id: "a8fc5384-1dbe-4763-b0ab-40bffb02f5a4" };
-        // getAccountId(emailAddr)
+        // getUserId(emailAddr)
         if (res.id) {
-          console.log("111111111111111");
           setAccountInfo(res);
         }
       }
