@@ -1,20 +1,30 @@
 import React, { useState, useEffect } from "react";
 import { Modal, Button, Col, Row, InputGroup } from "react-bootstrap";
 import Form from "react-bootstrap/Form";
-import { a1Details } from "../sampledata.js";
 import { generatePassword } from "../helpers/randomPassword.js";
 import { editCredential, getCredential, deleteCredential } from "../helpers/requests.js";
 import { IoMdEye, IoMdEyeOff, IoMdRefresh, IoMdCopy } from "react-icons/io";
 
 const AccountDetails = ({ itemInfo, userId, kid }) => {
   const [show, setShow] = useState(false);
-  const value = a1Details[0];
+  const [clickedDetails, setClickedDetails] = useState(false)
+  const [details, setDetails] = useState({});
+  const [appName, setAppName] = useState("");
+  const [website, setWebsite] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [sliderValue, setSliderValue] = useState(16);
+  const [pwShow, setPwShow] = useState(false);
+  const [numCheck, setNumCheck] = useState(true);
+  const [upperCheck, setUpperCheck] = useState(true);
+  const [lowerCheck, setLowerCheck] = useState(true);
+  const [spCharCheck, setSpCharCheck] = useState(false);
+  const [randomPw, setRandomPw] = useState("");
+
   const handleClose = () => {
     setShow(false);
   };
 
-
-  const [details, setDetails] = useState({});
   const loadDetails = async () => {
     const data = await getCredential(userId, itemInfo.id);
     setDetails(data);
@@ -25,12 +35,8 @@ const AccountDetails = ({ itemInfo, userId, kid }) => {
   };
   useEffect(() => {
     loadDetails();
-  }, [itemInfo]);
+  }, [clickedDetails]);
 
-  const [appName, setAppName] = useState("");
-  const [website, setWebsite] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
   const handleSaveChanges = async (e) => {
     e.preventDefault();
     const credDetails = {
@@ -39,7 +45,6 @@ const AccountDetails = ({ itemInfo, userId, kid }) => {
       email: email,
       password: password,
     };
-
     // sample is set to test add without encryption
     const sample = {
       id: details.id,
@@ -61,6 +66,7 @@ const AccountDetails = ({ itemInfo, userId, kid }) => {
 
   const handleShow = () => {
     setShow(true);
+    setClickedDetails(true)
     setRandomPw("");
     setPwShow(false);
     setSliderValue(16);
@@ -70,25 +76,14 @@ const AccountDetails = ({ itemInfo, userId, kid }) => {
     setSpCharCheck(false);
   };
 
-
-  const [sliderValue, setSliderValue] = useState(16);
-
   const handleSliderChange = (e) => {
     setSliderValue(e.target.value);
   };
-
-  const [pwShow, setPwShow] = useState(false);
 
   const handlePwShow = (e) => {
     e.preventDefault();
     setPwShow(!pwShow);
   };
-
-  const [numCheck, setNumCheck] = useState(true);
-  const [upperCheck, setUpperCheck] = useState(true);
-  const [lowerCheck, setLowerCheck] = useState(true);
-  const [spCharCheck, setSpCharCheck] = useState(false);
-  const [randomPw, setRandomPw] = useState("");
 
   const handlePwGenerate = (e) => {
     e.preventDefault();
@@ -182,7 +177,7 @@ const AccountDetails = ({ itemInfo, userId, kid }) => {
                     variant="outline-secondary"
                     id="button-copy"
                     onClick={(e) => {
-                      copyText(value.password);
+                      copyText(password);
                     }}
                   >
                     <IoMdCopy />
