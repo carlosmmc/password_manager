@@ -1,22 +1,20 @@
 import React, { useState, useEffect } from "react";
 import AccountDetails from "./AccountDetails.jsx";
 import { Col } from "react-bootstrap";
+import { getOverviewList } from "../helpers/requests.js";
 
-const AccountList = () => {
-  // do decryption in here
-
-  const baseLink = "password-manager-osu.wl.r.appspot.com/api/v1/accounts/";
-  const accountId = "ACCOUNTID";
+const AccountList = ({ accountInfo }) => {
   const [apps, setApps] = useState([]);
-  const loadApps = async () => {
-    const response = await fetch(baseLink + accountId + "/items");
-    const data = await response.json()
 
-    setApps(data);
+  const loadApps = async () => {
+    if (accountInfo) {
+      const data = await getOverviewList(accountInfo.id);
+      setApps(data);
+    }
   };
   useEffect(() => {
     loadApps();
-  }, []);
+  }, [accountInfo]);
 
   const sorted = apps.sort((a, b) => {
     if (a.data > b.data) {
@@ -38,7 +36,12 @@ const AccountList = () => {
           </thead>
           <tbody>
             {sorted.map((account, i) => (
-              <AccountDetails details={account} key={i} />
+              <AccountDetails
+                itemInfo={account}
+                key={i}
+                userId={accountInfo.id}
+                kid={accountInfo.kid}
+              />
             ))}
           </tbody>
         </table>

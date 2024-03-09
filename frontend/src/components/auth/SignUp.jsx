@@ -22,7 +22,7 @@ const SignUp = () => {
   };
 
   const actionCodeSettings = {
-    url: "http://localhost:3000/",
+    url: "https://password-manager-osu.wl.r.appspot.com/",
     handleCodeInApp: true,
   };
 
