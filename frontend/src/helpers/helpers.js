@@ -1,7 +1,5 @@
-import { auth} from "../firebase.js";
-import {
-  RecaptchaVerifier,
-} from "firebase/auth";
+import { auth } from "../firebase.js";
+import { RecaptchaVerifier } from "firebase/auth";
 import { useEffect, useState } from "react";
 
 /**
@@ -10,8 +8,7 @@ import { useEffect, useState } from "react";
  */
 export const signOutEvent = (e) => {
   e.preventDefault();
-  auth.signOut().then(() => {
-  });
+  auth.signOut().then(() => {});
 };
 
 /**
@@ -19,24 +16,28 @@ export const signOutEvent = (e) => {
  * @returns Firebase user auth and sign in status
  */
 export function useAuth() {
-  const [authState, setAuthState] = useState({isSignedIn: false, pending: true, user:null});
+  const [authState, setAuthState] = useState({
+    isSignedIn: false,
+    pending: true,
+    user: null,
+  });
   const [hasMfa, setHasMfa] = useState(false);
   const [isEmailVerified, setIsEmailVerified] = useState(false);
 
-  function checkUserSignedIn(user) {
+  const checkUserSignedIn = async (user) => {
     if (user) {
       console.log(`Signed in as: ${user.displayName} (${user.email})`);
-      setAuthState({isSignedIn: true, pending: false, user:user});
+      setAuthState({ isSignedIn: true, pending: false, user: user });
       if (user.multiFactor.enrolledFactors.length > 0) {
-        setHasMfa(true);
+        setHasMfa(true)
       }
       if (user.emailVerified) {
         setIsEmailVerified(true);
       }
     } else {
-      setAuthState({isSignedIn: false, pending: false, user:null});
+      setAuthState({ isSignedIn: false, pending: false, user: null });
     }
-  }
+  };
 
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged(function (user) {
@@ -64,7 +65,7 @@ export const handleRecaptcha = (e) => {
 export const handleEmailVerification = (e) => {
   e.preventDefault();
   const actionCodeSettings = {
-    url: "/",
+    url: "https://password-manager-osu.wl.r.appspot.com/",
     handleCodeInApp: true,
   };
   auth.currentUser

@@ -48,7 +48,7 @@ export const uiConfig = {
       if (error.code !== "firebaseui/anonymous-upgrade-merge-conflict") {
         return Promise.resolve();
       }
-      if (error.code == 'auth/multi-factor-auth-required') {
+      if (error.code === 'auth/multi-factor-auth-required') {
         const resolver = getMultiFactorResolver(auth, error);
         
       }
