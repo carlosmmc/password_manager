@@ -1,8 +1,8 @@
 import { Container } from "react-bootstrap";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import "./App.css";
-import Footer from "./components/Footer.jsx";
-import Header from "./components/Header.jsx";
+import Footer from "./components/footer.jsx";
+import Header from "./components/header.jsx";
 import HomePage from "./pages/HomePage.jsx";
 import AccountOverviewPage from "./pages/AccountOverviewPage.jsx";
 

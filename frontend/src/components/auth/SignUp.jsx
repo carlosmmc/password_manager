@@ -6,6 +6,8 @@ import {
   sendEmailVerification,
 } from "firebase/auth";
 import { auth } from "../../firebase.js";
+import { setupMasterKey, idHash } from "../../helpers/encDec.js";
+import { generatePassword } from "../../helpers/randomPassword.js";
 
 const SignUp = () => {
   const [email, setEmail] = useState("");
@@ -36,6 +38,16 @@ const SignUp = () => {
           displayName: username,
         }).then(() => {
           console.log(`profile updated, username: ${username}`);
+          // generate secret key id
+          let skID;
+          idHash(email).then((hash) => { skID = hash });
+          // compute secret key
+          const sk = generatePassword(16, true, true, true, true)
+          window.alert(`Your Secret Key is:\n${sk}\nPlease write this down in a safe place. You will need it to recover your account.`);
+          // Compute master key
+          setupMasterKey(password, sk, skID).then(() => {
+            console.log("retrieved key: ", sessionStorage.getItem("mk"));
+          })
         });
         sendEmailVerification(user, actionCodeSettings)
           .then(() => {})

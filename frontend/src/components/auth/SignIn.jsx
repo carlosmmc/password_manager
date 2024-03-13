@@ -10,6 +10,7 @@ import {
 } from "firebase/auth";
 import { handleRecaptcha } from "../../helpers/helpers.js";
 import SendTextMFA from "./SendTextMFA.jsx";
+import { setupMasterKey, idHash } from "../../helpers/encDec.js";
 
 const SignIn = ({ auth }) => {
   const [email, setEmail] = useState("");
@@ -81,9 +82,22 @@ const SignIn = ({ auth }) => {
                 setVerificationId(verificationId);
                 setMfaResolver(resolver);
                 setMfaTextSent(true);
+
               })
               .then(function (userCredential) {
                 // User successfully signed in with the second factor phone number.
+                // generate secret key id
+                let skID;
+                idHash(email).then((hash) => { skID = hash });
+                // get Secret Key
+                let sk = localStorage.getItem(skID);
+                if (sk === null) {
+                  // ask for secret key
+                    sk = window.prompt("We don't recognize this device. Please enter your Secret Key.");
+                }
+                // Compute master key
+                setupMasterKey(password, sk).then(() => {
+                })
               });
           } else {
             setErrorShow("Unsupported MFA method.");

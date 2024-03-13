@@ -1,10 +1,11 @@
+import { getKey, decrypt, encOnD } from './encDec';
+
 /**
  *
  * @param {String} emailAddr
  * @returns {Boolean} whether an account infromation is created by this request
  */
 export const createAccount = async (emailAddr) => {
-  // encrypt user email into account info here
   const accountInfo = {
     email: emailAddr,
     public_key: emailAddr,
@@ -34,20 +35,21 @@ export const createAccount = async (emailAddr) => {
  * @param {String} emailAddr user email address
  * @returns {String} account ID for this user email address
  */
+
 export const getUserId = async (emailAddr) => {
-  const baseLink = `/api/v1/accounts?email=${emailAddr}`;
   const response = await fetch(baseLink, {
     method: "GET",
+    headers: {
+      "Accept": "application/json"
+    }
   }).catch((error) => console.log(error));
-  const data = await response.json().catch((error) => {
-    console.log(error);
-  });
-
-  // decrypt if necessary
   if (response.status === 200) {
+    const data = await response.json().catch((error) => {
+      console.log(error);
+    });
     return data;
   } else {
-    console.log(`Failed to get the account id. ${data.Error}`);
+    console.log(`Failed to get the account id.`);
   }
 };
 
@@ -60,13 +62,28 @@ export const getOverviewList = async (userId) => {
   const baseLink = `/api/v1/accounts/${userId}/items`;
   const response = await fetch(baseLink, {
     method: "GET",
+    headers: {
+      "Accept": "application/json"
+    }
   }).catch((error) => {console.log(error)});
   const data = await response.json().catch((error) => {
     console.log(error);
   });
   if (response.status === 200) {
-    // decrypt data here and return the decrypted version in a list like this [{id:"abcd", data:"amazon"}]
-    return data;
+    const key = await getKey();
+    const itemList = [];
+    // decrypt data
+    for (let item in data) {
+      const itemCopy = JSON.parse(JSON.stringify(data[item]))
+      const ctxtObj = JSON.parse(itemCopy.data);
+      if (ctxtObj.length === 2) {
+        const iv = new Uint8Array(ctxtObj[0])
+        const ptxt = await decrypt(ctxtObj[1], iv, key)
+        itemCopy.data = ptxt
+      }
+      itemList.push(itemCopy)
+    }
+    return itemList;
   } else {
     console.log(`Failed to get the account overview list. ${data.Error}`);
     return []
@@ -79,15 +96,21 @@ export const getOverviewList = async (userId) => {
  * @param {JSON} credential
  * @returns {Boolean} whether the item is successfully modified
  */
-export const createCredential = async (userId, credential) => {
-  // encrypt credential information here
+export const createCredential = async (userId, kid, credential) => {
+  const plainParams = {
+    kid: kid,
+    enc: "AES-GCM",
+    cty: "b5+jwk+json"
+  }
+  // encrypt credential JSON
+  const credEnc = await encOnD(credential, plainParams);
   const baseLink = `/api/v1/accounts/${userId}/items`;
   const response = await fetch(baseLink, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
     },
-    body: JSON.stringify(credential),
+    body: JSON.stringify(credEnc),
   }).catch((error) => console.log(error));
   const data = await response.json().catch((error) => {
     console.log(error);
@@ -110,13 +133,25 @@ export const getCredential = async (userId, itemId) => {
   const baseLink = `/api/v1/accounts/${userId}/items/${itemId}`;
   const response = await fetch(baseLink, {
     method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+    },
   }).catch((error) => console.log(error));
   const data = await response.json().catch((error) => {
     console.log(error);
   });
   if (response.status === 200) {
-    // decrypt data here and return the decrypted data in JSON format
-    return data;
+    const ctxtObj = JSON.parse(data.data);
+    if (ctxtObj.length === 2) {
+      const key = await getKey();
+      const dataCopy = JSON.parse(JSON.stringify(data));
+      const iv = new Uint8Array(ctxtObj[0])
+      const ptxt = await decrypt(ctxtObj[1], iv, key)
+      dataCopy.data = JSON.parse(ptxt);
+      return dataCopy;
+    } else {
+      return data;
+    }
   } else {
     console.log(`Failed to get a set of credentials. ${data.Error}`);
   }
@@ -129,15 +164,21 @@ export const getCredential = async (userId, itemId) => {
  * @param {JSON} credential
  * @returns {Boolean} whether the item is successfully modified
  */
-export const editCredential = async (userId, itemId, credential) => {
-  // encrypt credential JSON here
+
+export const editCredential = async (userId, itemId, kid, credential) => {
+  const plainParams = {
+    kid: kid,
+    enc: "AES-GCM",
+    cty: "b5+jwk+json"
+  }
+  const credEnc = await encOnD(credential, plainParams);
   const baseLink = `/api/v1/accounts/${userId}/items/${itemId}`;
   const response = await fetch(baseLink, {
     method: "PUT",
     headers: {
       "Content-Type": "application/json",
     },
-    body: JSON.stringify(credential),
+    body: JSON.stringify(credEnc),
   }).catch((error) => console.log(error));
   const data = await response.json().catch((error) => {
     console.log(error);
