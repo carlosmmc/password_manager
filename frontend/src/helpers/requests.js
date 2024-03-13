@@ -37,6 +37,7 @@ export const createAccount = async (emailAddr) => {
  */
 
 export const getUserId = async (emailAddr) => {
+  const baseLink = `/api/v1/accounts?email=${emailAddr}`;
   const response = await fetch(baseLink, {
     method: "GET",
     headers: {
