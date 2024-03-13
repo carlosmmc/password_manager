@@ -68,19 +68,8 @@ const AddCred = ({ userInfo }) => {
       email: email,
       password: password,
     };
-    console.log(credDetails);
 
-    // sample is set to test add without encryption
-    const sample = {
-      kid: userInfo.kid,
-      enc: "A256GCM",
-      cty: "b5+jwk+json",
-      overview: appName,
-      details: website,
-    };
-
-    // change input from sample to credDetails when encryption is finished
-    const changed = await createCredential(userInfo.id, sample);
+    const changed = await createCredential(userInfo.id, userInfo.kid, credDetails);
     if (changed) {
       console.log("added");
       window.location.reload();

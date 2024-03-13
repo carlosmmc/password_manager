@@ -29,9 +29,9 @@ const AccountDetails = ({ itemInfo, userId, kid }) => {
     const data = await getCredential(userId, itemInfo.id);
     setDetails(data);
     setAppName(itemInfo.data);
-    setWebsite(details.data);
-    setEmail(details.id);
-    setPassword(kid);
+    setWebsite(data.data.website);
+    setEmail(data.data.email);
+    setPassword(data.data.password);
   };
   useEffect(() => {
     loadDetails();
@@ -45,17 +45,8 @@ const AccountDetails = ({ itemInfo, userId, kid }) => {
       email: email,
       password: password,
     };
-    // sample is set to test add without encryption
-    const sample = {
-      id: details.id,
-      kid: kid,
-      enc: "null",
-      cty: "b5+jwk+json",
-      overview: appName,
-      details: website,
-    };
-    // change input from sample to credDetails when encryption is finished
-    const changed = await editCredential(userId, itemInfo.id, sample);
+
+    const changed = await editCredential(userId, itemInfo.id, kid, credDetails);
     if (changed) {
       console.log("changed");
       window.location.reload();
@@ -140,7 +131,7 @@ const AccountDetails = ({ itemInfo, userId, kid }) => {
                 <Form.Group controlId="websiteUrl">
                   <Form.Label>Website URL (Optional)</Form.Label>
                   <Form.Control
-                    defaultValue={details.data}
+                    defaultValue={website}
                     type="url"
                     onChange={(e) => setWebsite(e.target.value)}
                   />
@@ -153,7 +144,7 @@ const AccountDetails = ({ itemInfo, userId, kid }) => {
                 <Form.Group controlId="formBasicEmail">
                   <Form.Label>Email </Form.Label>
                   <Form.Control
-                    defaultValue={details.id}
+                    defaultValue={email}
                     type="email"
                     required={true}
                     onChange={(e) => setEmail(e.target.value)}
@@ -164,7 +155,7 @@ const AccountDetails = ({ itemInfo, userId, kid }) => {
                 <Form.Label>Password</Form.Label>
                 <InputGroup>
                   <Form.Control
-                    defaultValue={details.kid}
+                    defaultValue={password}
                     type={pwShow ? "text" : "password"}
                     placeholder="Password"
                     onChange={(e) => setPassword(e.target.value)}
